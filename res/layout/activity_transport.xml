@@ -1,0 +1,146 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <include layout="@layout/common_top_bar_transport" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/input_driverName_transport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/input_driverName"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingTop="5dp"
+            android:singleLine="true"
+            android:textSize="10sp" >
+
+        </EditText>
+        <EditText
+            android:id="@+id/input_driverTel_transport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/input_driverTel"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingTop="5dp"
+            android:singleLine="true"
+            android:textSize="10sp" >
+
+        </EditText>
+        <EditText
+            android:id="@+id/input_carNum_transport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/input_carNum"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingTop="5dp"
+            android:singleLine="true"
+            android:textSize="10sp" >
+
+        </EditText>
+
+        
+
+        
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/listviewLayout_transport"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:background="#FFFFFF"
+        android:orientation="vertical"
+        android:visibility="invisible" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="5"
+            android:background="#FFFFFF" >
+
+            <ListView
+                android:id="@+id/add_item_listview_transport"
+                android:layout_width="match_parent"
+                android:layout_height="200sp" >
+            </ListView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
+            android:background="#FFFFFF" >
+
+            <Button
+                android:id="@+id/savebutton_transport"
+                android:layout_width="wrap_content"
+                android:layout_height="25sp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_default"
+                android:text="@string/save"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/uploadbutton_transport"
+                android:layout_width="wrap_content"
+                android:layout_height="25sp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_default"
+                android:text="@string/upload"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/cancelbutton_transport"
+                android:layout_width="wrap_content"
+                android:layout_height="25sp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_default"
+                android:text="@string/cancel"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        android:background="#FFFFFF"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/scan_Button_transport"
+            android:layout_width="match_parent"
+            android:layout_height="40sp"
+            android:background="@drawable/btn_default"
+            android:text="@string/saoka"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+</LinearLayout>
