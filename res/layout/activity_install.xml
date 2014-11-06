@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,24 +7,10 @@
     tools:context="${relativePackage}.${activityClass}" >
 
     <include layout="@layout/common_top_bar_install" />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/select_site"
-            android:textSize="25sp" />
-
-        <Spinner
-            android:id="@+id/Sp_install"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/editextlayout_install"
+        android:layout_below="@+id/common_top_bar_install_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
@@ -79,75 +65,78 @@
             android:textSize="20sp" />
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
+        android:layout_below="@+id/editextlayout_install"
         android:id="@+id/listAndBottom_bar_install"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
+        android:layout_above="@+id/scandevicebutton_layout"
+        android:layout_marginBottom="5dp"
         android:background="#FFFFFF"
         android:orientation="vertical"
-        android:visibility="invisible" >
+        android:visibility="invisible"
+         >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="0dp"
-            android:layout_weight="5"
-            android:background="#FFFFFF" >
+        
 
             <ListView
+               	android:layout_above="@+id/optionbuttonlayout_install"
                 android:id="@+id/lv_install"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="200sp" >
+                android:layout_height="match_parent" >
             </ListView>
-        </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/optionbuttonlayout_install"
+            android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="0dp"
-            android:layout_weight="1"
             android:background="#FFFFFF" >
 
             <Button
                 android:id="@+id/save_install"
                 android:layout_width="wrap_content"
-                android:layout_height="25sp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/btn_default"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/shape1"
                 android:text="@string/save"
                 android:textSize="15sp" />
 
             <Button
                 android:id="@+id/upload_install"
                 android:layout_width="wrap_content"
-                android:layout_height="25sp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/btn_default"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/shape1"
                 android:text="@string/upload"
                 android:textSize="15sp" />
 
             <Button
                 android:id="@+id/cancel_install"
                 android:layout_width="wrap_content"
-                android:layout_height="25sp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/btn_default"
+                android:background="@drawable/shape1"
                 android:text="@string/cancel"
                 android:textSize="15sp" />
         </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/scandevicebutton_layout"
+        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
         android:background="#FFFFFF"
         android:orientation="horizontal" >
 
@@ -156,7 +145,8 @@
             android:layout_width="match_parent"
             android:layout_height="40sp"
             android:layout_weight="1"
-            android:background="@drawable/btn_default"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/shape"
             android:text="@string/addDevice"
             android:textSize="20sp" />
 
@@ -165,9 +155,9 @@
             android:layout_width="match_parent"
             android:layout_height="40sp"
             android:layout_weight="1"
-            android:background="@drawable/btn_default"
+            android:background="@drawable/shape"
             android:text="@string/addMainDevice"
             android:textSize="20sp" />
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

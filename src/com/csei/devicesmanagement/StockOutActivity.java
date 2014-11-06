@@ -59,7 +59,7 @@ public class StockOutActivity extends Activity {
 		setContentView(R.layout.activity_stock_out);
 		
 		left_back = (ImageView) findViewById(R.id.iv_topbar_left_back_stockout);
-		storeHouseSp = (Spinner) findViewById(R.id.storehouseSp_stockout);
+		storeHouseSp = (Spinner) findViewById(R.id.tv_topbar_right_stockout);
 		addItemListView = (ListView) findViewById(R.id.add_item_listview_stockout);
 		addItemButton = (Button) findViewById(R.id.scan_Button_stockout);
 		uploadButton = (Button) findViewById(R.id.uploadbutton_stockout);

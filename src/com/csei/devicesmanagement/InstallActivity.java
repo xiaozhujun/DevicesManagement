@@ -30,6 +30,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,7 +45,7 @@ public class InstallActivity extends Activity {
 	private Button add;
 	private String deviceId;
 	private String mainDeviceId;
-	private LinearLayout listAndBottom_bar_install;
+	private RelativeLayout listAndBottom_bar_install;
 	private MyAdapter adapter;
 	private Button save;
 	private Button upload;
@@ -74,7 +75,7 @@ public class InstallActivity extends Activity {
 
 		userId = Integer.parseInt(intent.getStringExtra("userId"));
 
-		listAndBottom_bar_install = (LinearLayout) findViewById(R.id.listAndBottom_bar_install);
+		listAndBottom_bar_install = (RelativeLayout) findViewById(R.id.listAndBottom_bar_install);
 
 		list = new ArrayList<Map<String, Object>>();
 		input_DeviceId = (EditText) findViewById(R.id.input_deviceId_install);
@@ -86,12 +87,12 @@ public class InstallActivity extends Activity {
 		left_back = (ImageView) findViewById(R.id.iv_topbar_left_back_install);
 		scanDevice = (Button) findViewById(R.id.scan_Button_deviceId_install);
 		scanMaindevice = (Button) findViewById(R.id.scan_Button_mainDeviceId_install);
+		sp_install = (Spinner) findViewById(R.id.tv_topbar_right_install);
 		String[] spItems = new String[] { "工地1", "工地2", "工地3" };
 
 		ArrayAdapter<String> spAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, spItems);
-		spAdapter
-				.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
+		spAdapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
 		sp_install.setAdapter(spAdapter);
 
 		deviceDao = new DeviceServiceImple(InstallActivity.this);
@@ -276,30 +277,30 @@ public class InstallActivity extends Activity {
 		} else {
 			Builder alertDialog = new AlertDialog.Builder(InstallActivity.this);
 			alertDialog
-					.setTitle("提示")
-					.setMessage("是否放弃此次操作？")
-					.setNegativeButton("取消", null)
-					.setPositiveButton("确定",
-							new DialogInterface.OnClickListener() {
+			.setTitle("提示")
+			.setMessage("是否放弃此次操作？")
+			.setNegativeButton("取消", null)
+			.setPositiveButton("确定",
+					new DialogInterface.OnClickListener() {
 
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									adapter.notifyDataSetChanged();
-									finish();
-								}
-							})
-					.setNeutralButton("保存",
-							new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog,
+						int which) {
+					adapter.notifyDataSetChanged();
+					finish();
+				}
+			})
+			.setNeutralButton("保存",
+					new DialogInterface.OnClickListener() {
 
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									saveFunction();
-									saveHistory();
-									finish();
-								}
-							}).show();
+				@Override
+				public void onClick(DialogInterface dialog,
+						int which) {
+					saveFunction();
+					saveHistory();
+					finish();
+				}
+			}).show();
 		}
 	}
 

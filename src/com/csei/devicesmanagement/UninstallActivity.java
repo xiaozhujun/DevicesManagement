@@ -32,6 +32,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +43,7 @@ public class UninstallActivity extends Activity {
 	private ListView listView;
 	private List<Map<String, String>> list;
 	private String deviceId;
-	private LinearLayout listAndBottom_bar_uninstall;
+	private RelativeLayout listAndBottom_bar_uninstall;
 	private MyAdapter adapter;
 	private Button save;
 	private Button upload;
@@ -73,20 +74,20 @@ public class UninstallActivity extends Activity {
 		Intent intent = getIntent();
 		userId = Integer.parseInt(intent.getStringExtra("userId"));
 
-		listAndBottom_bar_uninstall = (LinearLayout) findViewById(R.id.listAndBottom_bar__uninstall);
+		listAndBottom_bar_uninstall = (RelativeLayout) findViewById(R.id.listAndBottom_bar_uninstall);
 
 		list = new ArrayList<Map<String, String>>();
-		sp_uninstall = (Spinner) findViewById(R.id.Sp_uninstall);
-		save = (Button) findViewById(R.id.savebutton_uninstall);
-		upload = (Button) findViewById(R.id.uploadbutton_uninstall);
-		cancel = (Button) findViewById(R.id.cancelbutton_uninstall);
-		scan = (Button) findViewById(R.id.scan_Button_uninstall);
+		sp_uninstall = (Spinner) findViewById(R.id.tv_topbar_right_uninstall);
+		save = (Button) findViewById(R.id.save_uninstall);
+		upload = (Button) findViewById(R.id.upload_uninstall);
+		cancel = (Button) findViewById(R.id.cancel_uninstall);
+		scan = (Button) findViewById(R.id.scan_Button_deviceId_uninstall);
 		left_back = (ImageView) findViewById(R.id.iv_topbar_left_back_uninstall);
 
 		ArrayAdapter<String> spAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, spItems);
 		spAdapter
-				.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
+		.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
 		sp_uninstall.setAdapter(spAdapter);
 
 		deviceDao = new DeviceServiceImple(UninstallActivity.this);
@@ -105,7 +106,7 @@ public class UninstallActivity extends Activity {
 					listView.setAdapter(adapter);
 					listAndBottom_bar_uninstall.setVisibility(View.VISIBLE);
 					break;
-				
+
 				case 2:
 					dialog.dismiss();
 					uploadFlag = 1;
@@ -118,7 +119,7 @@ public class UninstallActivity extends Activity {
 					adapter.notifyDataSetChanged();
 					if (list.size() == 0) {
 						listAndBottom_bar_uninstall
-								.setVisibility(View.INVISIBLE);
+						.setVisibility(View.INVISIBLE);
 					}
 					break;
 				default:
@@ -237,7 +238,7 @@ public class UninstallActivity extends Activity {
 
 	}
 
-	
+
 
 	class readDeviceThread implements Runnable {
 
@@ -261,30 +262,30 @@ public class UninstallActivity extends Activity {
 			Builder alertDialog = new AlertDialog.Builder(
 					UninstallActivity.this);
 			alertDialog
-					.setTitle("提示")
-					.setMessage("是否放弃此次操作？")
-					.setNegativeButton("取消", null)
-					.setPositiveButton("确定",
-							new DialogInterface.OnClickListener() {
+			.setTitle("提示")
+			.setMessage("是否放弃此次操作？")
+			.setNegativeButton("取消", null)
+			.setPositiveButton("确定",
+					new DialogInterface.OnClickListener() {
 
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									adapter.notifyDataSetChanged();
-									finish();
-								}
-							})
-					.setNeutralButton("保存",
-							new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog,
+						int which) {
+					adapter.notifyDataSetChanged();
+					finish();
+				}
+			})
+			.setNeutralButton("保存",
+					new DialogInterface.OnClickListener() {
 
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									saveFunction();
-									saveHistory();
-									finish();
-								}
-							}).show();
+				@Override
+				public void onClick(DialogInterface dialog,
+						int which) {
+					saveFunction();
+					saveHistory();
+					finish();
+				}
+			}).show();
 		}
 	}
 
@@ -295,7 +296,7 @@ public class UninstallActivity extends Activity {
 			int deviceIdInt;
 
 			deviceIdInt = Integer.parseInt((String) map1.get("deviceId"));
-			
+
 
 			HashMap<String, String> map = new HashMap<String, String>();
 			map = getDeviceMap(deviceIdInt, null, userId, 0, 0, 0);
@@ -316,7 +317,7 @@ public class UninstallActivity extends Activity {
 			int deviceIdInt;
 
 			deviceIdInt = Integer.parseInt((String) map1.get("deviceId"));
-			
+
 
 			HashMap<String, String> mapHistory = new HashMap<String, String>();
 			SimpleDateFormat dateFormat = new SimpleDateFormat(
@@ -423,7 +424,7 @@ public class UninstallActivity extends Activity {
 					adapter.notifyDataSetChanged();
 					if (list.size() == 0) {
 						listAndBottom_bar_uninstall
-								.setVisibility(View.INVISIBLE);
+						.setVisibility(View.INVISIBLE);
 					}
 				}
 			});

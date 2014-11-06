@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,54 +8,32 @@
 
     <include layout="@layout/common_top_bar_stock_out" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/select_store"
-            android:textSize="25sp" />
-
-        <Spinner
-            android:id="@+id/storehouseSp_stockout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/listviewLayout_stockout"
+        android:layout_below="@+id/bar_stockout"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_above="@+id/scan_Button_stockout"
         android:layout_marginTop="0dp"
         android:background="#FFFFFF"
-        android:orientation="vertical"
-        android:visibility="invisible" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight="5"
-            android:background="#FFFFFF" >
+        android:orientation="vertical" >
 
             <ListView
                 android:id="@+id/add_item_listview_stockout"
-                android:layout_width="match_parent"
-                android:layout_height="250dp" >
+                android:layout_above="@+id/linearlayout_button"
+                android:layout_width="fill_parent"
+				android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+            	android:layout_marginRight="10dp"
+           	 	android:layout_marginTop="10dp" >
             </ListView>
-        </LinearLayout>
-
         <LinearLayout
+            android:id="@+id/linearlayout_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1"
+            android:layout_margin="10dp"
+            android:layout_alignParentBottom="true"
             android:background="#FFFFFF" >
 
             <Button
@@ -63,7 +41,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/btn_default"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/shape1"
                 android:text="@string/save"
                 android:textSize="15sp" />
 
@@ -72,7 +51,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/btn_default"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/shape1"
                 android:text="@string/upload"
                 android:textSize="15sp" />
 
@@ -81,28 +62,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/btn_default"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/shape1"
                 android:text="@string/cancel"
                 android:textSize="15sp" />
         </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:background="#FFFFFF"
-        android:orientation="vertical" >
 
         <Button
             android:id="@+id/scan_Button_stockout"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
             android:layout_width="match_parent"
+            android:background="@drawable/shape"
             android:layout_height="40sp"
-            android:background="@drawable/btn_default"
+            
             android:text="@string/saoka"
             android:textSize="20sp" />
-    </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

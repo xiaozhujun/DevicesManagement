@@ -4,24 +4,42 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal" >
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:background="#C0C0C0"
+        >
     <TextView
+        android:id="@+id/item_stockin_textviewID"
         android:layout_width="wrap_content"
         android:layout_height="30sp"
-        android:layout_weight="1"
+		android:layout_marginLeft="10dip"
+		android:layout_marginTop="10dip"
         android:text="设备ID:" >
     </TextView>
 
     <TextView
+        android:layout_toRightOf="@+id/item_stockin_textviewName"
         android:id="@+id/deviceiditem"
+        android:layout_marginLeft="10dip"
+		android:layout_marginTop="10dip"
         android:layout_width="wrap_content"
         android:layout_height="30sp"
-        android:layout_weight="1" >
+        >
     </TextView>
 
     <TextView
+        android:id="@+id/item_stockin_textviewName"
+        android:layout_below="@+id/item_stockin_textviewID"
         android:layout_width="wrap_content"
+        android:layout_marginLeft="10dip"
+		android:layout_marginTop="10dip"
+		android:layout_marginBottom="10dip"
+		
         android:layout_height="30sp"
-        android:layout_weight="1"
+        
         android:text="设备Name" >
     </TextView>
 
@@ -29,16 +47,23 @@
         android:id="@+id/devicenameitem"
         android:layout_width="wrap_content"
         android:layout_height="30sp"
-        android:layout_weight="1" >
+        android:layout_marginTop="10dip"
+        android:layout_marginLeft="10dip"
+        
+        android:layout_below="@+id/deviceiditem"
+        android:layout_toRightOf="@+id/item_stockin_textviewName"
+         >
     </TextView>
 
     <Button
         android:id="@+id/deleteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+       	android:layout_margin="10dip"
+       	android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
         android:background="@drawable/btn_default"
         android:text="删除" >
     </Button>
-
+	</RelativeLayout>
 </LinearLayout>

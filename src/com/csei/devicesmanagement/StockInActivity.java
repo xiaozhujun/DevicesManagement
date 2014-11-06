@@ -33,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class StockInActivity extends Activity {
@@ -58,7 +59,7 @@ public class StockInActivity extends Activity {
 		setContentView(R.layout.activity_stock_in);
 		
 		left_back = (ImageView) findViewById(R.id.iv_topbar_left_back_stockin);
-		storeHouseSp = (Spinner) findViewById(R.id.storehouseSp_stockin);
+		storeHouseSp = (Spinner) findViewById(R.id.tv_topbar_right_stockin);
 		addItemListView = (ListView) findViewById(R.id.add_item_listview_stockin);
 		addItemButton = (Button) findViewById(R.id.scan_Button_stockin);
 		uploadButton = (Button) findViewById(R.id.uploadbutton_stockin);
