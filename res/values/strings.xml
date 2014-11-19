@@ -17,6 +17,9 @@
     <string name="install">设备安装</string>
     <string name="uninstall">设备卸载</string>
     <string name="transport">设备运输</string>
+    <string name="input_drivername">请输入司机姓名</string>
+    <string name="input_driverphone">请输入司机电话</string>
+    <string name="input_carnumber">请输入车牌号码</string>
     <string name="input_username">请输入用户名</string>
     <string name="input_passwords">请输入密码</string>
     <string name="submit">登录</string>

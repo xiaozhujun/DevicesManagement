@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <RelativeLayout
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#EAEAEE">
+        
+        <ImageView
+            android:id="@+id/shebeiimg"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            />
+		        
+        <TextView
+            android:id="@+id/shebeixinxitv"
+            android:layout_alignParentLeft="true"
+           	android:layout_alignParentTop="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:textSize="20sp"/>
+        <TextView
+            android:id="@+id/shebeiidtv"
+            android:layout_below="@+id/shebeixinxitv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="15sp"
+            />
+        <TextView
+            android:id="@+id/shebeinametv"
+            android:layout_below="@+id/shebeiidtv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="15sp"
+            />
+        <Button
+            android:id="@+id/shebeishanchubtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/shape1"
+            />
+        
+    </RelativeLayout>
+
+</RelativeLayout>

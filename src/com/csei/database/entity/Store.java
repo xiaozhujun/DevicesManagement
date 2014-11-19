@@ -28,7 +28,7 @@ public class Store {
 	public String getTelephone(){
 		return telephone;
 	}
-	public void set(String telephone){
+	public void setTelephone(String telephone){
 		this.telephone=telephone;
 	}
 

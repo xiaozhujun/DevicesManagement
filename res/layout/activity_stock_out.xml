@@ -19,20 +19,16 @@
         android:background="#FFFFFF"
         android:orientation="vertical" >
 
-            <ListView
+            <ExpandableListView
                 android:id="@+id/add_item_listview_stockout"
                 android:layout_above="@+id/linearlayout_button"
                 android:layout_width="fill_parent"
 				android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-            	android:layout_marginRight="10dp"
-           	 	android:layout_marginTop="10dp" >
-            </ListView>
+                 />
         <LinearLayout
             android:id="@+id/linearlayout_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
             android:layout_alignParentBottom="true"
             android:background="#FFFFFF" >
 
@@ -42,6 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginRight="5dp"
+                android:layout_marginLeft="10dp"
                 android:background="@drawable/shape1"
                 android:text="@string/save"
                 android:textSize="15sp" />
@@ -51,7 +48,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:background="@drawable/shape1"
                 android:text="@string/upload"
@@ -62,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginLeft="5dp"
+                android:layout_marginRight="10dp"
                 android:background="@drawable/shape1"
                 android:text="@string/cancel"
                 android:textSize="15sp" />
@@ -72,14 +68,15 @@
 
         <Button
             android:id="@+id/scan_Button_stockout"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
             android:layout_width="match_parent"
             android:background="@drawable/shape"
-            android:layout_height="40sp"
-            
+            android:layout_height="wrap_content"
             android:text="@string/saoka"
             android:textSize="20sp" />
 

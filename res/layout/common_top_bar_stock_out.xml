@@ -25,13 +25,6 @@
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true" >
 
-        <Spinner
-            android:id="@+id/tv_topbar_right_stockout"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:textAppearance="@style/CommonTopBarRightImageText" />
     </RelativeLayout>
 
     <TextView
@@ -39,13 +32,11 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/tv_topbar_right_map_layout"
-        android:layout_toRightOf="@id/iv_topbar_left_back_stockout"
         android:gravity="center"
         android:paddingLeft="10.0dip"
         android:paddingRight="10.0dip"
         android:singleLine="true"
-        android:text="@string/stock_in"
+        android:text="@string/stock_out"
         android:textAppearance="@style/CommonTopBarMiddleText" />
 
 </RelativeLayout>
