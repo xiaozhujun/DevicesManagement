@@ -29,7 +29,7 @@ public class InstallAdapter extends BaseExpandableListAdapter{
 	private LayoutInflater inflater = null;
 	private static int isSelected ;
 	private Device mainDevice;
-	
+	//很忙的好吗
 	public InstallAdapter(Context context,String[] groupName,ArrayList<Site> siteList,ArrayList<Device> deviceList,int isSelected,Device mainDevice){
 		this.context = context;
 		this.groupName = groupName;
