@@ -19,6 +19,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Toast;
 
 public class InstallAdapter extends BaseExpandableListAdapter{
 	
@@ -29,6 +30,7 @@ public class InstallAdapter extends BaseExpandableListAdapter{
 	private LayoutInflater inflater = null;
 	private static int isSelected ;
 	private Device mainDevice;
+	
 	//很忙的好吗
 	public InstallAdapter(Context context,String[] groupName,ArrayList<Site> siteList,ArrayList<Device> deviceList,int isSelected,Device mainDevice){
 		this.context = context;
