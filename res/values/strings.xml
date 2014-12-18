@@ -20,8 +20,15 @@
     <string name="input_drivername">请输入司机姓名</string>
     <string name="input_driverphone">请输入司机电话</string>
     <string name="input_carnumber">请输入车牌号码</string>
+    <string name="input_address">请输入出发地址</string>
+    <string name="input_destination">请输入目的地址</string>
     <string name="input_username">请输入用户名</string>
     <string name="input_passwords">请输入密码</string>
+    <string name="input_removeman">请输入卸载人姓名</string>
+   	<string name="input_removestatus">请输入卸载状态</string>
+   	<string name="input_installtype">请输入安装类型</string>
+   	<string name="input_installman">请输入安装人姓名</string>
+   	<string name="input_installstatus">请输入安装状态</string>
     <string name="submit">登录</string>
     <string name="show_passwords">显示密码</string>
     <string name="remember_passwords">记住密码</string>

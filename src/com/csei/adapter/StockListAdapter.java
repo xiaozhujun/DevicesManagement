@@ -3,6 +3,7 @@ package com.csei.adapter;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.csei.database.entity.Contract;
 import com.csei.database.entity.Device;
 import com.csei.database.entity.Store;
 import com.csei.devicesmanagement.R;
@@ -19,6 +20,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,14 +31,24 @@ public class StockListAdapter extends BaseExpandableListAdapter{
 
 	private Context context;
 	private String[] groupName;
+	private ArrayList<Contract> contractList;
+	private int contractSelected;
+	private String driverName;
+	private String driverPhone;
+	private String carNumber;
 	private ArrayList<Store> storeList;
+	private int storeSelected ;
 	private ArrayList<Device> deviceList;
 	private LayoutInflater inflater = null;
-	private static int isSelected ;
+	
+	private EditText driverNameEdt;
+	private EditText driverPhoneEdt;
+	private EditText carNumberEdt;
 	
 	public void setStoreList(ArrayList<Store> storeList){
 		this.storeList = storeList;
 	}
+	
 	public ArrayList<Store> getStoreList(){
 		return storeList;
 	}
@@ -51,18 +63,39 @@ public class StockListAdapter extends BaseExpandableListAdapter{
 		return deviceList;
 	}
 	
-	public int getIsSelected(){
-		return isSelected;
+	public int getContractSelected(){
+		return contractSelected;
+	}
+	
+	public int getStoreSelected(){
+		return storeSelected;
 	}
 
-	public StockListAdapter(Context context,String[] groupName,ArrayList<Store> storeList,ArrayList<Device> deviceList,int isSelected){
+	public String getDriverName(){
+		return driverName;
+	}
+	
+	public String getDriverPhone(){
+		return driverPhone;
+	}
+	
+	public String getCarNumber(){
+		return carNumber;
+	}
+	
+	public StockListAdapter(Context context,String[] groupName,ArrayList<Contract> contractList,ArrayList<Store> storeList,ArrayList<Device> deviceList,int contractSelected,int storeSelected,String driverName,String driverPhone,String carNumber){
 		this.context = context;
 		this.groupName = groupName;
+		this.contractList = contractList;
 		this.storeList = storeList;
 		Collections.reverse(deviceList);
 		this.deviceList = deviceList;
 		inflater = LayoutInflater.from(context);
-		this.isSelected = isSelected;
+		this.contractSelected = contractSelected;
+		this.storeSelected = storeSelected;
+		this.driverName = driverName;
+		this.driverPhone = driverPhone;
+		this.carNumber = carNumber;
 	}
 
 	@Override
@@ -73,27 +106,15 @@ public class StockListAdapter extends BaseExpandableListAdapter{
 	@Override
 	public int getChildrenCount(int groupPosition) {
 		if(groupPosition==0)
+			return contractList.size();
+		else if(groupPosition==1)
+			return 1;
+		else if(groupPosition==2)
 			return storeList.size();
 		else if (deviceList.isEmpty()) 
 			return 1;
 		else
 			return deviceList.size();
-	}
-
-	@Override
-	public Object getGroup(int groupPosition) {
-		if (groupPosition==0)
-			return storeList;
-		else 
-			return deviceList;
-	}
-
-	@Override
-	public Object getChild(int groupPosition, int childPosition) {
-		if(groupPosition==0)
-			return storeList.get(childPosition);
-		else 
-			return deviceList.get(childPosition);
 	}
 
 	@Override
@@ -133,7 +154,7 @@ public class StockListAdapter extends BaseExpandableListAdapter{
 			TextView cangkutelephonetv = (TextView) convertView.findViewById(R.id.cangkutelephonetv);
 			CheckBox cangkucb = (CheckBox) convertView.findViewById(R.id.cangkucb);
 			
-			if(isSelected==childPosition){
+			if(contractSelected==childPosition){
 				cangkucb.setChecked(true);
 			}
 			
@@ -142,9 +163,90 @@ public class StockListAdapter extends BaseExpandableListAdapter{
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if(isChecked){
-						isSelected = childPosition;
+						contractSelected = childPosition;
 					}else {
-						isSelected = -1;
+						contractSelected = -1;
+					} 
+				}
+			});
+
+			cangkuxinxitv.setText("合同信息");
+			cangkuidtv.setText("合同Id:  "+contractList.get(childPosition).getId()+"");
+			cangkunametv.setText("合同客户:  "+contractList.get(childPosition).getCustomerName());
+			cangkuaddresstv.setText("合同期限:  "+contractList.get(childPosition).getStartTime()+"至"+contractList.get(childPosition).getEndTime());
+			cangkutelephonetv.setText("签署日期:  "+contractList.get(childPosition).getSignTime());
+
+			return convertView;
+		}
+		else if (groupPosition==1){
+			convertView = inflater.inflate(R.layout.listitem_transport_driver, null);
+			driverNameEdt = (EditText) convertView.findViewById(R.id.drivernameedt);
+			driverPhoneEdt = (EditText) convertView.findViewById(R.id.driverphoneedt);
+			carNumberEdt = (EditText) convertView.findViewById(R.id.carnumberedt);
+			
+			if(!"".equals(driverName)){
+				driverNameEdt.setText(driverName);
+			}if(!"".equals(driverPhone)){
+				driverPhoneEdt.setText(driverPhone);
+			}if(!"".equals(carNumber)){
+				carNumberEdt.setText(carNumber);
+			}
+			
+			driverNameEdt.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {  
+			    @Override  
+			    public void onFocusChange(View v, boolean hasFocus) {  
+			        if(hasFocus) {
+			        	// 此处为得到焦点时的处理内容
+			        } else {
+			        	driverName = driverNameEdt.getText().toString();
+			        }
+			    	}
+			});
+			
+			driverPhoneEdt.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {  
+			    @Override  
+			    public void onFocusChange(View v, boolean hasFocus) {  
+			        if(hasFocus) {
+			        	// 此处为得到焦点时的处理内容
+			        } else {
+			        	driverPhone = driverPhoneEdt.getText().toString();
+			        }
+			    	}
+			});
+			
+			carNumberEdt.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {  
+			    @Override  
+			    public void onFocusChange(View v, boolean hasFocus) {  
+			        if(hasFocus) {
+			        	// 此处为得到焦点时的处理内容
+			        } else {
+			        	carNumber = carNumberEdt.getText().toString();
+			        }
+			    	}
+			});
+			return convertView;
+		}
+		else if(groupPosition==2){
+			convertView = inflater.inflate(R.layout.listitem_stock_store, null);
+			TextView cangkuxinxitv = (TextView) convertView.findViewById(R.id.cangkuxinxitv);
+			TextView cangkuidtv = (TextView) convertView.findViewById(R.id.cangkuidtv);
+			TextView cangkunametv = (TextView) convertView.findViewById(R.id.cangkunametv);
+			TextView cangkuaddresstv = (TextView) convertView.findViewById(R.id.cangkuaddresstv);
+			TextView cangkutelephonetv = (TextView) convertView.findViewById(R.id.cangkutelephonetv);
+			CheckBox cangkucb = (CheckBox) convertView.findViewById(R.id.cangkucb);
+			
+			if(storeSelected==childPosition){
+				cangkucb.setChecked(true);
+			}
+			
+			cangkucb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if(isChecked){
+						storeSelected = childPosition;
+					}else {
+						storeSelected = -1;
 					}
 					StockListAdapter.this.notifyDataSetChanged(); 
 				}
@@ -192,6 +294,18 @@ public class StockListAdapter extends BaseExpandableListAdapter{
 	@Override
 	public boolean isChildSelectable(int groupPosition, int childPosition) {
 		return false;
+	}
+
+	@Override
+	public Object getGroup(int groupPosition) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object getChild(int groupPosition, int childPosition) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

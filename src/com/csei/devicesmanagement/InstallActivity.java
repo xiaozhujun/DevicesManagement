@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-
 import com.csei.adapter.InstallAdapter;
 import com.csei.adapter.StockListAdapter;
 import com.csei.application.MyApplication;
+import com.csei.database.entity.Contract;
 import com.csei.database.entity.Device;
-import com.csei.database.entity.Site;
 import com.csei.database.entity.Store;
-import com.csei.database.entity.service.imple.DeviceServiceImple;
-import com.csei.database.entity.service.imple.HistoryServiceImple;
+import com.csei.database.entity.service.imple.DeviceServiceDao;
+import com.csei.database.entity.service.imple.InstallServiceDao;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -41,49 +41,53 @@ public class InstallActivity extends Activity {
 	private ProgressDialog dialog;
 	private Handler handler;
 	private int upLoadFlag = 0;
-	private ArrayList<Site> siteList;
+	private ArrayList<Contract> contractList;
 	private ArrayList<Device> deviceList;
 	private InstallAdapter myAdapter;
-	private static int isSelected = -1;
-	private String[] groupName = new String[]{"工地","主设备","设备"};
+	private int contractSelected = -1;
+	private String[] groupName = new String[]{"合同信息","安装信息","设备信息"};
 	private int userId;
-	private int siteId;
 	private static int saveDataFlag = 0;
 	private LinearLayout linearlayout_button;
 	private Device mainDevice;
 	
+	private String installType;
+	private String installMan;
+	private String installStatus;
+	
 	public void initData(){
-		siteList = new ArrayList<Site>();
+		
+		installType = new String("加装");
+		installMan = new String("喻念");
+		installStatus = new String("installStatus");
+		
+		contractList = new ArrayList<Contract>();
 		deviceList = new ArrayList<Device>();
-		mainDevice = new Device();
-		mainDevice.setId(99999);
-		mainDevice.setName("hahkgakjglda");
 		
-		Site site = new Site();
-		site.setId(111);
-		site.setName("武昌工地");
-		site.setAddress("武汉市武昌区武汉理工大学");
-		site.setTelephone("18062024445");
-		siteList.add(site);
+		Contract contract = new Contract();
+		contract.setId(111);
+		contract.setCustomerName("喻念");
+		contract.setStartTime("2014.12.12");
+		contract.setEndTime("2014.12.13");
+		contract.setSignTime("2014.1.1");
+		contractList.add(contract);
 		
-		Site site1 = new Site();
-		site1.setId(111);
-		site1.setName("汉口工地");
-		site1.setAddress("武汉市武昌区武汉理工大学");
-		site1.setTelephone("18062024445");
-		siteList.add(site1);
+		Contract contract2 = new Contract();
+		contract2.setId(222);
+		contract2.setCustomerName("喻念");
+		contract2.setStartTime("2014.12.12.2");
+		contract2.setEndTime("2014.12.13.2");
+		contract2.setSignTime("2014.1.1.2");
+		contractList.add(contract2);
 		
-		Site site2 = new Site();
-		site2.setId(111);
-		site2.setName("汉阳工地");
-		site2.setAddress("武汉市武昌区武汉理工大学");
-		site2.setTelephone("18062024445");
-		siteList.add(site2);
+		Contract contract3 = new Contract();
+		contract3.setId(333);
+		contract3.setCustomerName("喻念");
+		contract3.setStartTime("2014.12.12.3");
+		contract3.setEndTime("2014.12.13.3");
+		contract3.setSignTime("2014.1.1.3");
+		contractList.add(contract3);
 		
-		Device device = new Device();
-		device.setId(333);
-		device.setName("kgjakgkda");
-		deviceList.add(device);
 	}
 
 	@Override
@@ -103,7 +107,7 @@ public class InstallActivity extends Activity {
 		linearlayout_button = (LinearLayout) findViewById(R.id.linearlayout_button);
 		
 		initData();
-		myAdapter = new InstallAdapter(InstallActivity.this,groupName,siteList,deviceList,isSelected,mainDevice);
+		myAdapter = new InstallAdapter(InstallActivity.this,groupName,contractList,deviceList,installType,installMan,installStatus,contractSelected);
 		linearlayout_button.setVisibility(ViewGroup.GONE);
 		
 		addItemListView.setAdapter(myAdapter);
@@ -116,40 +120,43 @@ public class InstallActivity extends Activity {
 				case 1:
 					dialog.dismiss();
 					final int deviceId = (int)(1+Math.random()*(1000-1+1));
-					if (deviceId<200) {
-						mainDevice = myAdapter.getMainDevice();
-						if(mainDevice==null){
-							mainDevice = new Device();
-							mainDevice.setId(deviceId);
-							mainDevice.setName("这是主设备");
-							myAdapter.setMainDevice(mainDevice);
-							addItemListView.expandGroup(1);
-						}else{
-							Builder alertDialog = new AlertDialog.Builder(InstallActivity.this);
-							alertDialog.setTitle("提示").setMessage("是否更换主设备？")
-							.setNegativeButton("取消", null)
-							.setPositiveButton("更换",new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog,int which) {
-									mainDevice = new Device();
-									mainDevice.setId(deviceId);
-									mainDevice.setName("这是主设备");
-									myAdapter.setMainDevice(mainDevice);
-									addItemListView.expandGroup(1);
-								}}).show();
-						}
-					}else{
+//					if (deviceId<200) {
+//						mainDevice = myAdapter.getMainDevice();
+//						if(mainDevice==null){
+//							mainDevice = new Device();
+//							mainDevice.setId(deviceId);
+//							mainDevice.setName("这是主设备");
+//							myAdapter.setMainDevice(mainDevice);
+//							addItemListView.expandGroup(1);
+//						}else{
+//							Builder alertDialog = new AlertDialog.Builder(InstallActivity.this);
+//							alertDialog.setTitle("提示").setMessage("是否更换主设备？")
+//							.setNegativeButton("取消", null)
+//							.setPositiveButton("更换",new DialogInterface.OnClickListener() {
+//								@Override
+//								public void onClick(DialogInterface dialog,int which) {
+//									mainDevice = new Device();
+//									mainDevice.setId(deviceId);
+//									mainDevice.setName("这是主设备");
+//									myAdapter.setMainDevice(mainDevice);
+//									addItemListView.expandGroup(1);
+//								}}).show();
+//						}
+//					}else{
 						Device device = new Device();
 						device.setId(deviceId);
 						device.setName("塔吊");
 						deviceList = myAdapter.getDeviceList();
 						deviceList.add(device);
-						mainDevice = myAdapter.getMainDevice();
-						myAdapter = new InstallAdapter(InstallActivity.this,groupName,siteList,deviceList,isSelected,mainDevice);
+						installType = myAdapter.getInstallType();
+						installMan = myAdapter.getInstallMan();
+						installStatus = myAdapter.getInstallStatus();
+						contractSelected = myAdapter.getContractSelected();
+						myAdapter = new InstallAdapter(InstallActivity.this,groupName,contractList,deviceList,installType,installMan,installStatus,contractSelected);
 						addItemListView.setAdapter(myAdapter);
 						addItemListView.expandGroup(2);
 						linearlayout_button.setVisibility(ViewGroup.VISIBLE);
-					}
+//					}
 					break;
 				case 2:
 					dialog.dismiss();
@@ -210,8 +217,8 @@ public class InstallActivity extends Activity {
 			public void onClick(View v) {
 				deviceList = myAdapter.getDeviceList();
 				deviceList.clear();
-				isSelected = -1;
-				myAdapter = new InstallAdapter(InstallActivity.this, groupName,siteList,deviceList,isSelected,mainDevice);
+				contractSelected = -1;
+				myAdapter = new InstallAdapter(InstallActivity.this, groupName,contractList,deviceList,"","","",contractSelected);
 				addItemListView.setAdapter(myAdapter);
 				addItemListView.expandGroup(2);
 				linearlayout_button.setVisibility(ViewGroup.GONE);
@@ -231,88 +238,88 @@ public class InstallActivity extends Activity {
 
 	protected int saveData() {
 		//仅更新device表
-		if(myAdapter.getIsSelected()==-1){
-			Toast.makeText(getApplicationContext(), "请选择工地", Toast.LENGTH_SHORT).show();
+		if(myAdapter.getContractSelected()==-1){
+			Toast.makeText(getApplicationContext(), "请选择合同", Toast.LENGTH_SHORT).show();
 			return 0;
 		}else if(myAdapter.getDeviceList().isEmpty()){
 			Toast.makeText(getApplicationContext(), "请点击扫卡添加设备", Toast.LENGTH_SHORT).show();
 			return 0;
 		}else{
-			isSelected = myAdapter.getIsSelected();
-			deviceList = myAdapter.getDeviceList();
-			siteList = myAdapter.getSiteList();
-			DeviceServiceImple deviceDao = new DeviceServiceImple(InstallActivity.this);
-			for(Device device:deviceList){
-				int id = device.getId();
-				String name = device.getName();
-				siteId = siteList.get(isSelected).getId();
-				HashMap<String, String> deviceMap = new HashMap<String, String>();
-				mainDevice = myAdapter.getMainDevice();
-				deviceMap = getDeviceMap(id, name, userId, 0, mainDevice.getId(), 0);
-				if (deviceDao.findDeviceById(id)) {
-					deviceDao.updateData(deviceMap);
-				} else {
-					deviceDao.addDevice(deviceMap);
-				}
-			}
+//			contractSelected = myAdapter.getContractSelected();
+//			deviceList = myAdapter.getDeviceList();
+//			DeviceServiceDao deviceDao = new DeviceServiceDao(InstallActivity.this);
+//			for(Device device:deviceList){
+//				int id = device.getId();
+//				String name = device.getName();
+//				HashMap<String, String> deviceMap = new HashMap<String, String>();
+//				deviceMap = getDeviceMap(id, name, userId, 0, 0, "0");
+//				if (deviceDao.findDeviceById(id)) {
+//					deviceDao.updateData(deviceMap);
+//				} else {
+//					deviceDao.addDevice(deviceMap);
+//				}
+//			}
 			return 1;
 		}
 	}
 	
 	public HashMap<String, String> getDeviceMap(int deviceId, String name,
-			int userId, int storeId, int mainDeviceId, int stateFlag) {
+			int userId, int storehouseId, int mainDeviceId, String batchNumber) {
 		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("id", deviceId + "");
 		map.put("name", name);
 		map.put("userId", userId + "");
-		map.put("storeId", storeId + "");
+		map.put("storeId", storehouseId + "");
 		map.put("mainDeviceId", mainDeviceId + "");
-		map.put("stateFlag", stateFlag + "");
+		map.put("batchNumber", batchNumber);
 		return map;
 	}
 	
-	public HashMap<String, String> getHistoryMap(String time, int optionType,
-			int userId, int storeId, int deviceId, int mainDeviceId,
-			int upLoadFlag, String driverName, String carNum, String driverTel) {
+	public HashMap<String, String> getInstall(int userId,int contractId,String type,String installMan,String installStatus,int deviceId,int uploadFlag) {
 		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("deviceId", deviceId + "");
-		map.put("time", time);
-		map.put("userId", userId + "");
-		map.put("storeId", storeId + "");
-		map.put("mainDeviceId", mainDeviceId + "");
-		map.put("upLoadFlag", upLoadFlag + "");
-		map.put("optionType", optionType + "");
-		map.put("driverName", driverName);
-		map.put("carNum", carNum);
-		map.put("driverTel", driverTel);
+		map.put("userId", userId+"");
+		map.put("contractId", contractId+"");
+		map.put("type", type);
+		map.put("installMan", installMan);
+		map.put("installStatus", installStatus);
+		map.put("deviceId", deviceId+"");
+		map.put("uplaodFlag", uploadFlag+"");
+//		list.get(j).get("userId"),
+//		list.get(j).get("contractId"),
+//		list.get(j).get("type"),
+//		list.get(j).get("installMan"),
+//		list.get(j).get("installStatus"),
+//		list.get(j).get("deviceId"),
+//		list.get(j).get("upLoadFlag")
 		return map;
 	}
 
 	@SuppressLint("SimpleDateFormat") 
 	protected void saveHistory() {
 		
-		isSelected = myAdapter.getIsSelected();
+		contractSelected = myAdapter.getContractSelected();
+		int contractId = contractList.get(contractSelected).getId();
 		deviceList = myAdapter.getDeviceList();
 		Collections.reverse(deviceList);
-		siteList = myAdapter.getSiteList();
-		HistoryServiceImple historyDao = new HistoryServiceImple(InstallActivity.this);
+		InstallServiceDao installServiceDao = new InstallServiceDao(InstallActivity.this);
+		ArrayList<HashMap<String, String>> historyMapList = new ArrayList<HashMap<String,String>>();
 		for(Device device:deviceList){
 			int id = device.getId();
-			siteId = siteList.get(isSelected).getId();
-			mainDevice = myAdapter.getMainDevice();
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String time = df.format(new Date());
-			HashMap<String, String> historyMap = new HashMap<String, String>();
-			historyMap = getHistoryMap(time, 2, userId, 0, id, mainDevice.getId(), upLoadFlag, "", "", "");
-			historyDao.addHistory(historyMap);
+			HashMap<String, String> installMap = new HashMap<String, String>();
+			installMap = getInstall(userId,contractId, myAdapter.getInstallType(), myAdapter.getInstallMan(), myAdapter.getInstallStatus(),id,upLoadFlag);
+			historyMapList.add(installMap);
 		}
+		
+		installServiceDao.add(historyMapList);
 		upLoadFlag = 0;
 		saveDataFlag = 0;
 		Toast.makeText(getApplicationContext(), "记录保存成功", Toast.LENGTH_SHORT).show();
 		deviceList = myAdapter.getDeviceList();
 		deviceList.clear();
-		isSelected = -1;
-		myAdapter = new InstallAdapter(InstallActivity.this, groupName,siteList,deviceList,isSelected,mainDevice);
+		contractSelected = -1;
+		myAdapter = new InstallAdapter(InstallActivity.this, groupName,contractList,deviceList,"","","",contractSelected);
 		addItemListView.setAdapter(myAdapter);
 		addItemListView.expandGroup(2);
 		linearlayout_button.setVisibility(ViewGroup.GONE);
@@ -343,8 +350,8 @@ public class InstallActivity extends Activity {
 													deviceList = myAdapter.getDeviceList();
 													mainDevice = new Device();
 													deviceList.clear();
-													isSelected = -1;
-													myAdapter = new InstallAdapter(InstallActivity.this, groupName,siteList,deviceList,isSelected,mainDevice);
+													contractSelected = -1;
+													myAdapter = new InstallAdapter(InstallActivity.this, groupName,contractList,deviceList,"","","",contractSelected);
 													addItemListView.setAdapter(myAdapter);
 													addItemListView.expandGroup(1);
 													linearlayout_button.setVisibility(ViewGroup.GONE);

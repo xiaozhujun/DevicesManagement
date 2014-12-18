@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <RelativeLayout
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#EAEAEE">
+        
+        <CheckBox
+            android:id="@+id/transportcb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="10dp"/>
+		        
+        <TextView
+            android:id="@+id/transporttv"
+            android:layout_alignParentLeft="true"
+           	android:layout_alignParentTop="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:textSize="20sp"/>
+        <TextView
+            android:id="@+id/deviceidtv"
+            android:layout_below="@+id/transporttv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="15sp"/>
+        <TextView
+            android:id="@+id/drivertv"
+            android:layout_below="@+id/deviceidtv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="15sp"/>
+        
+        <TextView
+            android:id="@+id/telephonetv"
+            android:layout_below="@+id/drivertv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="15sp"/>
+        
+        <TextView
+            android:id="@+id/destinationtv"
+            android:layout_below="@+id/telephonetv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="15sp"/>
+        
+        <TextView
+            android:id="@+id/addresstv"
+            android:layout_below="@+id/destinationtv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="15sp"/>
+        
+    </RelativeLayout>
+
+</RelativeLayout>

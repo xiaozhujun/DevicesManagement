@@ -26,12 +26,16 @@ public class TransportAdapter extends BaseExpandableListAdapter{
 	private EditText driverNameEdt;
 	private EditText driverPhoneEdt;
 	private EditText carNumberEdt;
+	private EditText addressEdt;
+	private EditText destinationEdt;
 	
 	private String driverName;
 	private String driverPhone;
 	private String carNumber;
+	private String address;
+	private String destination;
 	
-	public TransportAdapter(Context context,String[] groupName,ArrayList<Device> deviceList,String driverName,String driverPhone,String carNumber){
+	public TransportAdapter(Context context,String[] groupName,ArrayList<Device> deviceList,String driverName,String driverPhone,String carNumber,String address,String destination){
 		this.context = context;
 		this.groupName = groupName;
 		Collections.reverse(deviceList);
@@ -40,6 +44,8 @@ public class TransportAdapter extends BaseExpandableListAdapter{
 		this.driverName = driverName;
 		this.driverPhone =  driverPhone;
 		this.carNumber = carNumber;
+		this.address = address;
+		this.destination = destination;
 	}
 
 	public ArrayList<Device> getDeviceList(){
@@ -48,15 +54,23 @@ public class TransportAdapter extends BaseExpandableListAdapter{
 	}
 	
 	public String getDriverName(){
-		return driverNameEdt.getText().toString().trim();
+		return driverName;
 	}
 	
 	public String getDriverPhone(){
-		return driverPhoneEdt.getText().toString().trim();
+		return driverPhone;
 	}
 	
 	public String getCarNumber(){
-		return carNumberEdt.getText().toString().trim();
+		return carNumber;
+	}
+	
+	public String getAddress(){
+		return address;
+	}
+	
+	public String getDestination(){
+		return destination;
 	}
 	
 	@Override
@@ -122,13 +136,79 @@ public class TransportAdapter extends BaseExpandableListAdapter{
 			driverNameEdt = (EditText) convertView.findViewById(R.id.drivernameedt);
 			driverPhoneEdt = (EditText) convertView.findViewById(R.id.driverphoneedt);
 			carNumberEdt = (EditText) convertView.findViewById(R.id.carnumberedt);
+			addressEdt = (EditText) convertView.findViewById(R.id.addressedt);
+			destinationEdt = (EditText) convertView.findViewById(R.id.destinationedt);
+			
 			if(!"".equals(driverName)){
 				driverNameEdt.setText(driverName);
-			}if(!"".equals(driverPhone)){
+			}
+			if(!"".equals(driverPhone)){
 				driverPhoneEdt.setText(driverPhone);
-			}if(!"".equals(carNumber)){
+			}
+			if(!"".equals(carNumber)){
 				carNumberEdt.setText(carNumber);
 			}
+			if(!"".equals(address)){
+				carNumberEdt.setText(address);
+			}
+			if(!"".equals(destination)){
+				carNumberEdt.setText(destination);
+			}
+			
+			driverNameEdt.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {  
+			    @Override  
+			    public void onFocusChange(View v, boolean hasFocus) {  
+			        if(hasFocus) {
+			        	// 此处为得到焦点时的处理内容
+			        } else {
+			        	driverName = driverNameEdt.getText().toString();
+			        }
+			    	}
+			});
+			
+			driverPhoneEdt.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {  
+			    @Override  
+			    public void onFocusChange(View v, boolean hasFocus) {  
+			        if(hasFocus) {
+			        	// 此处为得到焦点时的处理内容
+			        } else {
+			        	driverPhone = driverPhoneEdt.getText().toString();
+			        }
+			    	}
+			});
+			
+			carNumberEdt.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {  
+			    @Override  
+			    public void onFocusChange(View v, boolean hasFocus) {  
+			        if(hasFocus) {
+			        	// 此处为得到焦点时的处理内容
+			        } else {
+			        	carNumber = carNumberEdt.getText().toString();
+			        }
+			    	}
+			});
+			
+			addressEdt.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {  
+			    @Override  
+			    public void onFocusChange(View v, boolean hasFocus) {  
+			        if(hasFocus) {
+			        	// 此处为得到焦点时的处理内容
+			        } else {
+			        	address = addressEdt.getText().toString();
+			        }
+			    	}
+			});
+			
+			destinationEdt.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {  
+			    @Override  
+			    public void onFocusChange(View v, boolean hasFocus) {  
+			        if(hasFocus) {
+			        	// 此处为得到焦点时的处理内容
+			        } else {
+			        	destination = destinationEdt.getText().toString();
+			        }
+			    	}
+			});
 			return convertView;
 		}else{
 			if (deviceList.isEmpty()) {

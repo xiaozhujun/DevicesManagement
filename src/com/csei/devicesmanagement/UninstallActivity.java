@@ -1,16 +1,14 @@
 package com.csei.devicesmanagement;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import com.csei.adapter.UninstallAdapter;
 import com.csei.application.MyApplication;
+import com.csei.database.entity.Contract;
 import com.csei.database.entity.Device;
-import com.csei.database.entity.Site;
-import com.csei.database.entity.service.imple.DeviceServiceImple;
-import com.csei.database.entity.service.imple.HistoryServiceImple;
+import com.csei.database.entity.service.imple.DeviceServiceDao;
+import com.csei.database.entity.service.imple.UninstallServiceDao;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -38,41 +36,46 @@ public class UninstallActivity extends Activity {
 	private ProgressDialog dialog;
 	private Handler handler;
 	private int upLoadFlag = 0;
-	private ArrayList<Site> siteList;
+	private ArrayList<Contract> contractList;
 	private ArrayList<Device> deviceList;
 	private UninstallAdapter myAdapter;
-	private static int isSelected = -1;
-	private String[] groupName = new String[]{"选择工地","设备"};
+	private int contractSelected = -1;
+	private String[] groupName = new String[]{"合同信息","卸载信息","设备信息"};
 	private int userId;
-	private int storeId;
-	private static int saveDataFlag = 0;
+	private int contractId;
+	private int saveDataFlag = 0;
 	private LinearLayout linearlayout_button;
 	
+	private String removeMan = "喻念"; 
+	private String removeStatus = "removeStatus";
+	
 	public void initData(){
-		siteList = new ArrayList<Site>();
+		contractList = new ArrayList<Contract>();
 		deviceList = new ArrayList<Device>();
 		
-		Site site = new Site();
-		site.setId(111);
-		site.setName("武昌工地");
-		site.setAddress("武汉市武昌区武汉理工大学");
-		site.setTelephone("18062024445");
-		siteList.add(site);
+		Contract contract = new Contract();
+		contract.setId(111);
+		contract.setCustomerName("喻念");
+		contract.setStartTime("2014.12.12");
+		contract.setEndTime("2014.12.13");
+		contract.setSignTime("2014.1.1");
+		contractList.add(contract);
 		
-		Site site1 = new Site();
-		site1.setId(111);
-		site1.setName("汉口工地");
-		site1.setAddress("武汉市武昌区武汉理工大学");
-		site1.setTelephone("18062024445");
-		siteList.add(site1);
+		Contract contract2 = new Contract();
+		contract2.setId(222);
+		contract2.setCustomerName("喻念");
+		contract2.setStartTime("2014.12.12.2");
+		contract2.setEndTime("2014.12.13.2");
+		contract2.setSignTime("2014.1.1.2");
+		contractList.add(contract2);
 		
-		Site site2 = new Site();
-		site2.setId(111);
-		site2.setName("汉阳工地");
-		site2.setAddress("武汉市武昌区武汉理工大学");
-		site2.setTelephone("18062024445");
-		siteList.add(site2);
-		
+		Contract contract3 = new Contract();
+		contract3.setId(333);
+		contract3.setCustomerName("喻念");
+		contract3.setStartTime("2014.12.12.3");
+		contract3.setEndTime("2014.12.13.3");
+		contract3.setSignTime("2014.1.1.3");
+		contractList.add(contract3);
 	}
 
 	@Override
@@ -92,11 +95,11 @@ public class UninstallActivity extends Activity {
 		linearlayout_button = (LinearLayout) findViewById(R.id.linearlayout_button);
 		
 		initData();
-		myAdapter = new UninstallAdapter(UninstallActivity.this,groupName,siteList,deviceList,isSelected);
+		myAdapter = new UninstallAdapter(UninstallActivity.this,groupName,contractList,deviceList,removeMan,removeStatus,contractSelected);
 		linearlayout_button.setVisibility(ViewGroup.GONE);
 		
 		addItemListView.setAdapter(myAdapter);
-		addItemListView.expandGroup(1);
+		addItemListView.expandGroup(2);
 		
 		handler = new Handler() {
 			public void handleMessage(Message msg) {
@@ -109,9 +112,9 @@ public class UninstallActivity extends Activity {
 					device.setName("塔吊");
 					deviceList = myAdapter.getDeviceList();
 					deviceList.add(device);
-					myAdapter = new UninstallAdapter(UninstallActivity.this, groupName,siteList,deviceList,isSelected);
+					myAdapter = new UninstallAdapter(UninstallActivity.this, groupName,contractList,deviceList,myAdapter.getRemoveMan(),myAdapter.getRemoveStatus(),myAdapter.getContractSelected());
 					addItemListView.setAdapter(myAdapter);
-					addItemListView.expandGroup(1);
+					addItemListView.expandGroup(2);
 					linearlayout_button.setVisibility(ViewGroup.VISIBLE);
 					break;
 				case 2:
@@ -173,10 +176,10 @@ public class UninstallActivity extends Activity {
 			public void onClick(View v) {
 				deviceList = myAdapter.getDeviceList();
 				deviceList.clear();
-				isSelected = -1;
-				myAdapter = new UninstallAdapter(UninstallActivity.this, groupName,siteList,deviceList,isSelected);
+				contractSelected = -1;
+				myAdapter = new UninstallAdapter(UninstallActivity.this, groupName,contractList,deviceList,"","",contractSelected);
 				addItemListView.setAdapter(myAdapter);
-				addItemListView.expandGroup(1);
+				addItemListView.expandGroup(2);
 				linearlayout_button.setVisibility(ViewGroup.GONE);
 			}
 		});
@@ -194,88 +197,81 @@ public class UninstallActivity extends Activity {
 
 	protected int saveData() {
 		//仅更新device表
-		if(myAdapter.getIsSelected()==-1){
-			Toast.makeText(getApplicationContext(), "请选择工地", Toast.LENGTH_SHORT).show();
+		if(myAdapter.getContractSelected()==-1){
+			Toast.makeText(getApplicationContext(), "请选择合同", Toast.LENGTH_SHORT).show();
 			return 0;
 		}else if(myAdapter.getDeviceList().isEmpty()){
 			Toast.makeText(getApplicationContext(), "请点击扫卡添加设备", Toast.LENGTH_SHORT).show();
 			return 0;
 		}else{
-			isSelected = myAdapter.getIsSelected();
-			deviceList = myAdapter.getDeviceList();
-			siteList = myAdapter.getStoreList();
-			DeviceServiceImple deviceDao = new DeviceServiceImple(UninstallActivity.this);
-			for(Device device:deviceList){
-				int id = device.getId();
-				String name = device.getName();
-//				storeId = siteList.get(isSelected).getId();
-				HashMap<String, String> deviceMap = new HashMap<String, String>();
-				deviceMap = getDeviceMap(id, name, userId, 0, 0, 0);
-				if (deviceDao.findDeviceById(id)) {
-					deviceDao.updateData(deviceMap);
-				} else {
-					deviceDao.addDevice(deviceMap);
-				}
-			}
+//			contractSelected = myAdapter.getContractSelected();
+//			deviceList = myAdapter.getDeviceList();
+//			DeviceServiceDao deviceDao = new DeviceServiceDao(UninstallActivity.this);
+//			for(Device device:deviceList){
+//				int id = device.getId();
+//				String name = device.getName();
+//				HashMap<String, String> deviceMap = new HashMap<String, String>();
+//				deviceMap = getDeviceMap(id, name, userId, 0, 0, "0");
+//				if (deviceDao.findDeviceById(id)) {
+//					deviceDao.updateData(deviceMap);
+//				} else {
+//					deviceDao.addDevice(deviceMap);
+//				}
+//			}
 			return 1;
 		}
 	}
 	
 	public HashMap<String, String> getDeviceMap(int deviceId, String name,
-			int userId, int storeId, int mainDeviceId, int stateFlag) {
+			int userId, int storehouseId, int mainDeviceId, String batchNumber) {
 		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("id", deviceId + "");
 		map.put("name", name);
 		map.put("userId", userId + "");
-		map.put("storeId", storeId + "");
+		map.put("storeId", storehouseId + "");
 		map.put("mainDeviceId", mainDeviceId + "");
-		map.put("stateFlag", stateFlag + "");
+		map.put("batchNumber", batchNumber);
 		return map;
 	}
 	
-	public HashMap<String, String> getHistoryMap(String time, int optionType,
-			int userId, int storeId, int deviceId, int mainDeviceId,
-			int upLoadFlag, String driverName, String carNum, String driverTel) {
+	public HashMap<String, String> getUninstall(int userId,int contractId,String removeMan,String removeStatus,int deviceId,int upLoadFlag) {
 		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("deviceId", deviceId + "");
-		map.put("time", time);
-		map.put("userId", userId + "");
-		map.put("storeId", storeId + "");
-		map.put("mainDeviceId", mainDeviceId + "");
-		map.put("upLoadFlag", upLoadFlag + "");
-		map.put("optionType", optionType + "");
-		map.put("driverName", driverName);
-		map.put("carNum", carNum);
-		map.put("driverTel", driverTel);
+		map.put("userId", userId+"");
+		map.put("contractId", contractId+"");
+		map.put("removeMan", removeMan);
+		map.put("removeStatus", removeStatus);
+		map.put("deviceId", deviceId+"");
+		map.put("upLoadFlag", upLoadFlag+"");
 		return map;
 	}
 
 	@SuppressLint("SimpleDateFormat") 
 	protected void saveHistory() {
 		
-		isSelected = myAdapter.getIsSelected();
+		contractId = myAdapter.getContractSelected();
 		deviceList = myAdapter.getDeviceList();
+		ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String,String>>();
 		Collections.reverse(deviceList);
-		siteList = myAdapter.getStoreList();
-		HistoryServiceImple historyDao = new HistoryServiceImple(UninstallActivity.this);
+		UninstallServiceDao uninstallServiceDao = new UninstallServiceDao(UninstallActivity.this);
 		for(Device device:deviceList){
 			int id = device.getId();
-			storeId = siteList.get(isSelected).getId();
-			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String time = df.format(new Date());
-			HashMap<String, String> historyMap = new HashMap<String, String>();
-			historyMap = getHistoryMap(time, 3, userId, 0, id, 0, upLoadFlag, "", "", "");
-			historyDao.addHistory(historyMap);
+			contractId = contractList.get(contractId).getId();
+//			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//			String time = df.format(new Date());
+			HashMap<String, String> uninstallMap = new HashMap<String, String>();
+			uninstallMap = getUninstall(userId, contractId, myAdapter.getRemoveMan(), myAdapter.getRemoveStatus(), id, upLoadFlag);
+			list.add(uninstallMap);
 		}
+		uninstallServiceDao.add(list);
 		upLoadFlag = 0;
 		saveDataFlag = 0;
 		Toast.makeText(getApplicationContext(), "记录保存成功", Toast.LENGTH_SHORT).show();
 		deviceList = myAdapter.getDeviceList();
 		deviceList.clear();
-		isSelected = -1;
-		myAdapter = new UninstallAdapter(UninstallActivity.this, groupName,siteList,deviceList,isSelected);
+		contractSelected = -1;
+		myAdapter = new UninstallAdapter(UninstallActivity.this, groupName,contractList,deviceList,"","",contractSelected);
 		addItemListView.setAdapter(myAdapter);
-		addItemListView.expandGroup(1);
+		addItemListView.expandGroup(2);
 		linearlayout_button.setVisibility(ViewGroup.GONE);
 	}
 
@@ -303,10 +299,10 @@ public class UninstallActivity extends Activity {
 												public void onClick(DialogInterface dialog,int which) {
 													deviceList = myAdapter.getDeviceList();
 													deviceList.clear();
-													isSelected = -1;
-													myAdapter = new UninstallAdapter(UninstallActivity.this, groupName,siteList,deviceList,isSelected);
+													contractSelected = -1;
+													myAdapter = new UninstallAdapter(UninstallActivity.this, groupName,contractList,deviceList,"","",contractSelected);
 													addItemListView.setAdapter(myAdapter);
-													addItemListView.expandGroup(1);
+													addItemListView.expandGroup(2);
 													linearlayout_button.setVisibility(ViewGroup.GONE);
 													finish();
 												}})
@@ -354,7 +350,7 @@ public class UninstallActivity extends Activity {
 			}
 			Message msg = Message.obtain();
 			msg.what = 1; 
-			handler.sendMessage(msg);
+			handler.sendMessage(msg); 
 		}
 	}
 	

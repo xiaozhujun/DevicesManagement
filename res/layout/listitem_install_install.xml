@@ -11,13 +11,13 @@
         android:background="#EAEAEE" >
 
         <EditText
-            android:id="@+id/drivernameedt"
+            android:id="@+id/installtypeedt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:background="@drawable/login_edittext_bg"
             android:ems="10"
-            android:hint="@string/input_drivername"
+            android:hint="@string/input_installtype"
             android:paddingBottom="5dp"
             android:paddingLeft="2dp"
             android:paddingTop="5dp"
@@ -28,14 +28,30 @@
         </EditText>
 
         <EditText
-            android:id="@+id/driverphoneedt"
+            android:id="@+id/installmanedt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/drivernameedt"
+            android:layout_below="@+id/installtypeedt"
             android:layout_marginBottom="10dp"
             android:background="@drawable/login_edittext_bg"
             android:ems="10"
-            android:hint="@string/input_driverphone"
+            android:hint="@string/input_installman"
+            android:paddingBottom="5dp"
+            android:paddingLeft="2dp"
+            android:paddingTop="5dp"
+            android:singleLine="true"
+            android:textSize="15sp" >
+        </EditText>
+        
+        <EditText
+            android:id="@+id/installstatusedt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/installmanedt"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/login_edittext_bg"
+            android:ems="10"
+            android:hint="@string/input_installstatus"
             android:paddingBottom="5dp"
             android:paddingLeft="2dp"
             android:paddingTop="5dp"
@@ -43,53 +59,6 @@
             android:textSize="15sp" >
         </EditText>
 
-        <EditText
-            android:id="@+id/carnumberedt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/driverphoneedt"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/login_edittext_bg"
-            android:ems="10"
-            android:hint="@string/input_carnumber"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2dp"
-            android:paddingTop="5dp"
-            android:singleLine="true"
-            android:textSize="15sp" >
-        </EditText>
-        
-        <EditText
-            android:id="@+id/addressedt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/carnumberedt"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/login_edittext_bg"
-            android:ems="10"
-            android:hint="@string/input_address"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2dp"
-            android:paddingTop="5dp"
-            android:singleLine="true"
-            android:textSize="15sp" >
-        </EditText>
-        
-        <EditText
-            android:id="@+id/destinationedt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/addressedt"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/login_edittext_bg"
-            android:ems="10"
-            android:hint="@string/input_destination"
-            android:paddingBottom="5dp"
-            android:paddingLeft="2dp"
-            android:paddingTop="5dp"
-            android:singleLine="true"
-            android:textSize="15sp" >
-        </EditText>
     </RelativeLayout>
 
 </RelativeLayout>

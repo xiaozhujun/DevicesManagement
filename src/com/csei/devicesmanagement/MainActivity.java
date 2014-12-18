@@ -136,6 +136,7 @@ public class MainActivity extends Activity {
 					Intent it1 = new Intent(MainActivity.this,
 							StockInActivity.class);
 					it1.putExtra("userId", userId);
+					it1.putExtra("userName", userName);
 					startActivity(it1);
 
 					break;
@@ -144,6 +145,7 @@ public class MainActivity extends Activity {
 					Intent it2 = new Intent(MainActivity.this,
 							StockOutActivity.class);
 					it2.putExtra("userId", userId);
+					it2.putExtra("userName", userName);
 					startActivity(it2);
 
 					break;
@@ -152,6 +154,7 @@ public class MainActivity extends Activity {
 					Intent it3 = new Intent(MainActivity.this,
 							InstallActivity.class);
 					it3.putExtra("userId", userId);
+					it3.putExtra("userName", userName);
 					startActivity(it3);
 
 					break;
@@ -160,6 +163,7 @@ public class MainActivity extends Activity {
 					Intent it4 = new Intent(MainActivity.this,
 							UninstallActivity.class);
 					it4.putExtra("userId", userId);
+					it4.putExtra("userName", userName);
 					startActivity(it4);
 
 					break;
@@ -168,12 +172,14 @@ public class MainActivity extends Activity {
 					Intent it5 = new Intent(MainActivity.this,
 							TransportActivity.class);
 					it5.putExtra("userId", userId);
+					it5.putExtra("userName", userName);
 					startActivity(it5);
 
 					break;
 				case 5:
 					Intent it6=new Intent(MainActivity.this,HistoryActivity.class);
 					it6.putExtra("userId", userId);
+					it6.putExtra("userName", userName);
 					startActivity(it6);
 				}
 			}

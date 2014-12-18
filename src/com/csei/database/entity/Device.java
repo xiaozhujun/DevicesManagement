@@ -3,11 +3,10 @@ package com.csei.database.entity;
 public class Device {
 	private int id;
 	private String name;
-	private int userId;
-	private int storeId;
+	private String number;
+	private String deviceType;
 	private int mainDeviceId;
-	//设备是否需要维修
-	private int stateFlag;
+	private String batchNumber;
 	
 	public int getId(){
 		return id;
@@ -23,20 +22,20 @@ public class Device {
 		this.name=name;
 	}
 	
-	public int getUserId(){
-		return userId;
+	public String getNumber(){
+		return number;
 	}
-	public void setUserId(int userId){
-		this.userId=userId;
-	}
-	
-	public int getStoreId(){
-		return storeId;
-	}
-	public void setStoreId(int storeId){
-		this.storeId=storeId;
+	public void setNumber(String number){
+		this.number=number;
 	}
 	
+	public String getDeviceType(){
+		return deviceType;
+	}
+	public void setDeviceType(String deviceType){
+		this.deviceType=deviceType;
+	}
+
 	public int getMainDeviceId(){
 		return mainDeviceId;
 	}
@@ -44,12 +43,10 @@ public class Device {
 		this.mainDeviceId=mainDeviceId;
 	}
 	
-	
-	public int getStateFlag(){
-		return stateFlag;
+	public String getBatchNumber(){
+		return batchNumber;
 	}
-	public void setStateFlag(int stateFlag){
-		this.stateFlag=stateFlag;
+	public void setBatchNumber(String batchNumber){
+		this.batchNumber=batchNumber;
 	}
-
 }

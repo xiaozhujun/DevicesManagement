@@ -7,15 +7,19 @@ import java.util.Date;
 import java.util.HashMap;
 import com.csei.adapter.StockListAdapter;
 import com.csei.application.MyApplication;
+import com.csei.database.entity.Contract;
 import com.csei.database.entity.Device;
 import com.csei.database.entity.Store;
-import com.csei.database.entity.service.imple.DeviceServiceImple;
-import com.csei.database.entity.service.imple.HistoryServiceImple;
+import com.csei.database.entity.service.imple.DeviceServiceDao;
+import com.csei.database.entity.service.imple.StockInServiceDao;
+import com.csei.database.entity.service.imple.StockOutServiceDao;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,17 +44,24 @@ public class StockOutActivity extends Activity {
 	private int upLoadFlag = 0;
 	private ArrayList<Store> storeList;
 	private ArrayList<Device> deviceList;
+	private ArrayList<Contract> contractList;
 	private StockListAdapter myAdapter;
-	private static int isSelected = -1;
-	private String[] groupName = new String[]{"选择仓库","设备"};
+	private int contractSelected = -1;
+	private int storeSelected = -1;
+	private String[] groupName = new String[]{"合同信息","运输信息","选择仓库","设备"};
 	private int userId;
-	private int storeId;
 	private static int saveDataFlag = 0;
 	private LinearLayout linearlayout_button;
+	private String driverName = "eeee";
+	private String driverPhone = "eeee";
+	private String carNumber = "eeeee";
+	private int contractId;
+	private int storehouseId;
 	
 	public void initData(){
 		storeList = new ArrayList<Store>();
 		deviceList = new ArrayList<Device>();
+		contractList = new ArrayList<Contract>();
 		
 		Store store = new Store();
 		store.setId(111);
@@ -73,6 +84,30 @@ public class StockOutActivity extends Activity {
 		store2.setTelephone("18062024445");
 		storeList.add(store2);
 		
+		Contract contract = new Contract();
+		contract.setId(111);
+		contract.setCustomerName("喻念");
+		contract.setStartTime("2014.12.12");
+		contract.setEndTime("2014.12.13");
+		contract.setSignTime("2014.1.1");
+		contractList.add(contract);
+		
+		Contract contract2 = new Contract();
+		contract2.setId(222);
+		contract2.setCustomerName("喻念");
+		contract2.setStartTime("2014.12.12.2");
+		contract2.setEndTime("2014.12.13.2");
+		contract2.setSignTime("2014.1.1.2");
+		contractList.add(contract2);
+		
+		Contract contract3 = new Contract();
+		contract3.setId(333);
+		contract3.setCustomerName("喻念");
+		contract3.setStartTime("2014.12.12.3");
+		contract3.setEndTime("2014.12.13.3");
+		contract3.setSignTime("2014.1.1.3");
+		contractList.add(contract3);
+		
 	}
 
 	@Override
@@ -80,20 +115,22 @@ public class StockOutActivity extends Activity {
 		
 		super.onCreate(savedInstanceState);
 		MyApplication.getInstance().addActivity(this);
-		setContentView(R.layout.activity_stock_out);
+		setContentView(R.layout.activity_stock_in);
 		userId = Integer.parseInt(getIntent().getStringExtra("userId"));
 		
-		left_back = (ImageView) findViewById(R.id.iv_topbar_left_back_stockout);
-		addItemListView = (ExpandableListView) findViewById(R.id.add_item_listview_stockout);
-		addItemButton = (Button) findViewById(R.id.scan_Button_stockout);
-		uploadButton = (Button) findViewById(R.id.uploadbutton_stockout);
-		saveButton = (Button) findViewById(R.id.savebutton_stockout);
-		cancelButton = (Button) findViewById(R.id.cancelbutton_stockout);
+		left_back = (ImageView) findViewById(R.id.iv_topbar_left_back_stockin);
+		addItemListView = (ExpandableListView) findViewById(R.id.add_item_listview_stockin);
+		addItemButton = (Button) findViewById(R.id.scan_Button_stockin);
+		uploadButton = (Button) findViewById(R.id.uploadbutton_stockin);
+		saveButton = (Button) findViewById(R.id.savebutton_stockin);
+		cancelButton = (Button) findViewById(R.id.cancelbutton_stockin);
 		linearlayout_button = (LinearLayout) findViewById(R.id.linearlayout_button);
 		
 		initData();
-		myAdapter = new StockListAdapter(StockOutActivity.this,groupName,storeList,deviceList,isSelected);
+		//Context context,String[] groupName,ArrayList<Contract> contractList,ArrayList<Store> storeList,ArrayList<Device> deviceList,int contractSelected,int storeSelected,String driverName,String driverPhone,String carNumber
+		myAdapter = new StockListAdapter(StockOutActivity.this,groupName,contractList,storeList,deviceList,contractSelected,storeSelected,driverName,driverPhone,carNumber);
 		linearlayout_button.setVisibility(ViewGroup.GONE);
+		
 		addItemListView.setAdapter(myAdapter);
 		addItemListView.expandGroup(1);
 		
@@ -108,9 +145,14 @@ public class StockOutActivity extends Activity {
 					device.setName("塔吊");
 					deviceList = myAdapter.getDeviceList();
 					deviceList.add(device);
-					myAdapter = new StockListAdapter(StockOutActivity.this, groupName,storeList,deviceList,isSelected);
+					contractSelected = myAdapter.getContractSelected();
+					storeSelected = myAdapter.getStoreSelected();
+					driverName = myAdapter.getDriverName();
+					driverPhone = myAdapter.getDriverPhone();
+					carNumber = myAdapter.getCarNumber();
+					myAdapter = new StockListAdapter(StockOutActivity.this,groupName,contractList,storeList,deviceList,contractSelected,storeSelected,driverName,driverPhone,carNumber);
 					addItemListView.setAdapter(myAdapter);
-					addItemListView.expandGroup(1);
+					addItemListView.expandGroup(3);
 					linearlayout_button.setVisibility(ViewGroup.VISIBLE);
 					break;
 				case 2:
@@ -172,10 +214,14 @@ public class StockOutActivity extends Activity {
 			public void onClick(View v) {
 				deviceList = myAdapter.getDeviceList();
 				deviceList.clear();
-				isSelected = -1;
-				myAdapter = new StockListAdapter(StockOutActivity.this, groupName,storeList,deviceList,isSelected);
+				driverName = "";
+				driverPhone = "";
+				carNumber = "";
+				contractSelected = -1;
+				storeSelected = -1;
+				myAdapter = new StockListAdapter(StockOutActivity.this, groupName,contractList,storeList,deviceList,contractSelected,storeSelected,driverName,driverPhone,carNumber);
 				addItemListView.setAdapter(myAdapter);
-				addItemListView.expandGroup(1);
+				addItemListView.expandGroup(3);
 				linearlayout_button.setVisibility(ViewGroup.GONE);
 			}
 		});
@@ -193,86 +239,108 @@ public class StockOutActivity extends Activity {
 
 	protected int saveData() {
 		//仅更新device表
-		if(myAdapter.getIsSelected()==-1){
+		if(myAdapter.getContractSelected()==-1){
+			Toast.makeText(getApplicationContext(), "请选择合同", Toast.LENGTH_SHORT).show();
+			return 0;
+		}
+		else if(myAdapter.getStoreSelected()==-1){
 			Toast.makeText(getApplicationContext(), "请选择仓库", Toast.LENGTH_SHORT).show();
 			return 0;
 		}else if(myAdapter.getDeviceList().isEmpty()){
 			Toast.makeText(getApplicationContext(), "请点击扫卡添加设备", Toast.LENGTH_SHORT).show();
 			return 0;
 		}else{
-			isSelected = myAdapter.getIsSelected();
-			deviceList = myAdapter.getDeviceList();
-			storeList = myAdapter.getStoreList();
-			DeviceServiceImple deviceDao = new DeviceServiceImple(StockOutActivity.this);
-			for(Device device:deviceList){
-				int id = device.getId();
-				String name = device.getName();
-				HashMap<String, String> deviceMap = new HashMap<String, String>();
-				deviceMap = getDeviceMap(id, name, userId, 0, 0, 0);
-				if (deviceDao.findDeviceById(id)) {
-					deviceDao.updateData(deviceMap);
-				} else {
-					deviceDao.addDevice(deviceMap);
-				}
-			}
+//			contractSelected = myAdapter.getContractSelected();
+//			storeSelected = myAdapter.getStoreSelected();
+//			deviceList = myAdapter.getDeviceList();
+//			DeviceServiceDao deviceDao = new DeviceServiceDao(StockOutActivity.this);
+//			for(Device device:deviceList){
+//				int id = device.getId();
+//				String name = device.getName();
+//				contractId = contractList.get(contractSelected).getId();
+//				storehouseId = storeList.get(storeSelected).getId();
+//				HashMap<String, String> deviceMap = new HashMap<String, String>();
+//				deviceMap = getDeviceMap(id, name, userId, storehouseId, 0, "什么鬼？");
+//				if (deviceDao.findDeviceById(id)) {
+//					deviceDao.updateData(deviceMap);
+//				} else {
+//					deviceDao.addDevice(deviceMap);
+//				}
+//			}
 			return 1;
 		}
 	}
 	
 	public HashMap<String, String> getDeviceMap(int deviceId, String name,
-			int userId, int storeId, int mainDeviceId, int stateFlag) {
+			int userId, int storehouseId, int mainDeviceId, String batchNumber) {
 		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("id", deviceId + "");
 		map.put("name", name);
 		map.put("userId", userId + "");
-		map.put("storeId", storeId + "");
+		map.put("storeId", storehouseId + "");
 		map.put("mainDeviceId", mainDeviceId + "");
-		map.put("stateFlag", stateFlag + "");
+		map.put("batchNumber", batchNumber);
 		return map;
 	}
-	
-	public HashMap<String, String> getHistoryMap(String time, int optionType,
-			int userId, int storeId, int deviceId, int mainDeviceId,
-			int upLoadFlag, String driverName, String carNum, String driverTel) {
+
+	public HashMap<String, String> getStockOut(int userId,int storehouseId,int contractId,String driver,String number,String carNumber,String description,int deviceId,int uploadFlag) {
 		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("deviceId", deviceId + "");
-		map.put("time", time);
-		map.put("userId", userId + "");
-		map.put("storeId", storeId + "");
-		map.put("mainDeviceId", mainDeviceId + "");
-		map.put("upLoadFlag", upLoadFlag + "");
-		map.put("optionType", optionType + "");
-		map.put("driverName", driverName);
-		map.put("carNum", carNum);
-		map.put("driverTel", driverTel);
+		map.put("userId", userId+"");
+		map.put("storehouseId", storehouseId+"");
+		map.put("contractId", contractId+"");
+		map.put("driver", driver);
+		map.put("number", number);
+		map.put("carNumber", carNumber);
+		map.put("description", description);
+		map.put("deviceId", deviceId+"");
+		map.put("uplaodFlag", uploadFlag+"");
+//		list.get(j).get("userId"),
+//		list.get(j).get("storehouseId"),
+//		list.get(j).get("number"),
+//		list.get(j).get("contractId"),
+//		list.get(j).get("driver"),
+//		list.get(j).get("carNumber"),
+//		list.get(j).get("description"),
+//		list.get(j).get("deviceId"),
+//		list.get(j).get("upLoadFlag")
 		return map;
 	}
 
 	@SuppressLint("SimpleDateFormat") 
 	protected void saveHistory() {
 		
-		isSelected = myAdapter.getIsSelected();
+		contractSelected = myAdapter.getContractSelected();
+		storeSelected = myAdapter.getStoreSelected();
 		deviceList = myAdapter.getDeviceList();
 		Collections.reverse(deviceList);
-		storeList = myAdapter.getStoreList();
-		HistoryServiceImple historyDao = new HistoryServiceImple(StockOutActivity.this);
+		StockOutServiceDao stockOutServiceDao = new StockOutServiceDao(StockOutActivity.this);
+		storehouseId = storeList.get(storeSelected).getId();
+		String driver = myAdapter.getDriverName();
+		String number = myAdapter.getDriverPhone();
+		carNumber = myAdapter.getCarNumber();
+		
+		ArrayList<HashMap<String, String>> historyMapList = new ArrayList<HashMap<String,String>>();
 		for(Device device:deviceList){
-			int id = device.getId();
-			storeId = storeList.get(isSelected).getId();
+			int deviceId = device.getId();
+			storehouseId = storeList.get(storeSelected).getId();
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String time = df.format(new Date());
+			String description = df.format(new Date());
 			HashMap<String, String> historyMap = new HashMap<String, String>();
-			historyMap = getHistoryMap(time, 1, userId, storeId, id, 0, upLoadFlag, "", "", "");
-			historyDao.addHistory(historyMap);
+			historyMap = getStockOut(userId, storehouseId, contractId, driver, number, carNumber, description, deviceId, upLoadFlag);
+			historyMapList.add(historyMap);
 		}
+		
+		stockOutServiceDao.add(historyMapList);
+		upLoadFlag = 0;
 		saveDataFlag = 0;
-		isSelected = -1;
 		Toast.makeText(getApplicationContext(), "记录保存成功", Toast.LENGTH_SHORT).show();
 		deviceList = myAdapter.getDeviceList();
 		deviceList.clear();
-		myAdapter = new StockListAdapter(StockOutActivity.this, groupName,storeList,deviceList,isSelected);
+		contractSelected = -1;
+		storeSelected = -1;
+		myAdapter = new StockListAdapter(StockOutActivity.this, groupName,contractList,storeList,deviceList,contractSelected,storeSelected,"","","");
 		addItemListView.setAdapter(myAdapter);
-		addItemListView.expandGroup(1);
+		addItemListView.expandGroup(3);
 		linearlayout_button.setVisibility(ViewGroup.GONE);
 	}
 
@@ -300,8 +368,9 @@ public class StockOutActivity extends Activity {
 												public void onClick(DialogInterface dialog,int which) {
 													deviceList = myAdapter.getDeviceList();
 													deviceList.clear();
-													isSelected = -1;
-													myAdapter = new StockListAdapter(StockOutActivity.this, groupName,storeList,deviceList,isSelected);
+													contractSelected = -1;
+													storeSelected = -1;
+													myAdapter = new StockListAdapter(StockOutActivity.this, groupName,contractList,storeList,deviceList,contractSelected,storeSelected,"","","");
 													addItemListView.setAdapter(myAdapter);
 													addItemListView.expandGroup(1);
 													linearlayout_button.setVisibility(ViewGroup.GONE);

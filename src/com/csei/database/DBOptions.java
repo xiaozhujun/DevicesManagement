@@ -25,12 +25,18 @@ public class DBOptions extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
-		db.execSQL("CREATE TABLE IF NOT EXISTS USER(id integer primary key,name varchar(255),userName varchar(255),image varchar(255),sex varchar(255),userRole varchar(255))");
-		db.execSQL("CREATE TABLE IF NOT EXISTS STORE(id integer primary key,name varchar(255),address varchar(255),telephone varchar(255))");
-		db.execSQL("CREATE TABLE IF NOT EXISTS DEVICE(id integer primary key,name varchar(255),userId integer,storeId integer,mainDeviceId integer,stateFlag integer)");
-		//optionType：0入库；1出库；2安装；3卸载；4运输
-		db.execSQL("CREATE TABLE IF NOT EXISTS HISTORY(id integer primary key autoincrement,userId integer,deviceId integer,storeId integer,time varchar(255),optionType integer,mainDeviceId integer,upLoadFlag integer,driverName varchar(255),carNum varchar(255),driverTel varchar(255))");
-		db.execSQL("CREATE TABLE IF NOT EXISTS SITE(id integer primary key,name varchar(255),address varchar(255),telephone varchar(255))");
+		db.execSQL("CREATE TABLE IF NOT EXISTS USER(id integer primary key,name varchar(255),sex varchar(255),role varchar(255),status varchar(255),appId integer,appName varchar(255),image varchar(255))");
+		db.execSQL("CREATE TABLE IF NOT EXISTS STORE(id integer primary key,name varchar(255),description varchar(255),createTime varchar(255),address varchar(255),linkMan varchar(255),telephone varchar(255),appId integer)");
+		db.execSQL("CREATE TABLE IF NOT EXISTS CONTRACT(id integer primary key,name varchar(255),customerName varchar(255),number varchar(255),startTime varchar(255),endTime varchar(255),signTime varchar(255),appId integer)");
+		db.execSQL("CREATE TABLE IF NOT EXISTS DEVICE(id integer primary key,name varchar(255),number varchar(255),deviceType varchar(255),mainDeviceId integer,batchNumber varchar(255))");
+		//下面是记录表
+		db.execSQL("CREATE TABLE IF NOT EXISTS TRANSPORT(id integer primary key autoincrement,userId integer,driver varchar(255),telephone varchar(255),destination varchar(255),address varchar(255),deviceId integer,upLoadFlag integer)");
+		db.execSQL("CREATE TABLE IF NOT EXISTS STOCKIN(id integer primary key autoincrement,userId integer,storehouseId integer,number varchar(255),contractId integer,driver varchar(255),carNumber varchar(255),description varchar(255),deviceId integer,upLoadFlag integer)");
+		db.execSQL("CREATE TABLE IF NOT EXISTS STOCKOUT(id integer primary key autoincrement,userId integer,storehouseId integer,number varchar(255),contractId integer,driver varchar(255),carNumber varchar(255),description varchar(255),deviceId integer,upLoadFlag integer)");
+		db.execSQL("CREATE TABLE IF NOT EXISTS INSTALL(id integer primary key autoincrement,userId integer,contractId integer,type varchar(255),installMan varchar(255),installStatus varchar(255),deviceId integer,upLoadFlag integer)");
+		db.execSQL("CREATE TABLE IF NOT EXISTS UNINSTALL(id integer primary key autoincrement,userId integer,contractId integer,removeMan varchar(255),removeStatus varchar(255),deviceId integer,upLoadFlag integer)");
+		
+	
 	}
 
 	@Override
@@ -38,9 +44,14 @@ public class DBOptions extends SQLiteOpenHelper {
 		// TODO Auto-generated method stub
 		db.execSQL("DROP TABLE IF EXISTS USER");
 		db.execSQL("DROP TABLE IF EXISTS STORE"); 
+		db.execSQL("DROP TABLE IF EXISTS CONTRACT"); 
 		db.execSQL("DROP TABLE IF EXISTS DEVICE"); 
-		db.execSQL("DROP TABLE IF EXISTS HISTORY"); 
-		db.execSQL("DROP TABLE IF EXISTS SITE"); 
+		
+		db.execSQL("DROP TABLE IF EXISTS TRANSPORT"); 
+		db.execSQL("DROP TABLE IF EXISTS STOCKIN"); 
+		db.execSQL("DROP TABLE IF EXISTS STOCKOUT"); 
+		db.execSQL("DROP TABLE IF EXISTS INSTALL"); 
+		db.execSQL("DROP TABLE IF EXISTS UNINSTALL"); 
 		onCreate(db); 
 	}
 

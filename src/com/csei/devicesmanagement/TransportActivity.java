@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+
 import com.csei.adapter.StockListAdapter;
 import com.csei.adapter.TransportAdapter;
 import com.csei.application.MyApplication;
 import com.csei.database.entity.Device;
 import com.csei.database.entity.Store;
-import com.csei.database.entity.service.imple.DeviceServiceImple;
-import com.csei.database.entity.service.imple.HistoryServiceImple;
+import com.csei.database.entity.service.imple.DeviceServiceDao;
+import com.csei.database.entity.service.imple.TransportServiceDao;
 import com.csei.devicesmanagement.R.id;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -43,13 +44,20 @@ public class TransportActivity extends Activity {
 	private int upLoadFlag = 0;
 	private ArrayList<Device> deviceList;
 	private TransportAdapter myAdapter;
-	private String[] groupName = new String[]{"司机信息","设备"};
+	private String[] groupName = new String[]{"运输信息","设备信息"};
 	private int userId;
 	private static int saveDataFlag = 0;
 	private LinearLayout linearlayout_button;
 	
+	private String driverName = "喻念";
+	private String driverPhone = "110";
+	private String carNumber = "27598799";
+	private String address = "jifjakjglka";
+	private String destination = "fdsjgkjalkg"; 
+	
 	public void initData(){
 		deviceList = new ArrayList<Device>();
+		
 	}
 
 	@Override
@@ -69,7 +77,7 @@ public class TransportActivity extends Activity {
 		linearlayout_button = (LinearLayout) findViewById(R.id.linearlayout_button);
 		
 		initData();
-		myAdapter = new TransportAdapter(TransportActivity.this,groupName,deviceList,"","","");
+		myAdapter = new TransportAdapter(TransportActivity.this,groupName,deviceList,driverName,driverPhone,carNumber,address,destination);
 		linearlayout_button.setVisibility(ViewGroup.GONE);
 		
 		addItemListView.setAdapter(myAdapter);
@@ -86,7 +94,7 @@ public class TransportActivity extends Activity {
 					device.setName("塔吊");
 					deviceList = myAdapter.getDeviceList();
 					deviceList.add(device);
-					myAdapter = new TransportAdapter(TransportActivity.this, groupName,deviceList,myAdapter.getDriverName(),myAdapter.getDriverPhone(),myAdapter.getCarNumber());
+					myAdapter = new TransportAdapter(TransportActivity.this, groupName,deviceList,myAdapter.getDriverName(),myAdapter.getDriverPhone(),myAdapter.getCarNumber(),myAdapter.getAddress(),myAdapter.getDestination());
 					addItemListView.setAdapter(myAdapter);
 					addItemListView.expandGroup(1);
 					linearlayout_button.setVisibility(ViewGroup.VISIBLE);
@@ -150,8 +158,7 @@ public class TransportActivity extends Activity {
 			public void onClick(View v) {
 				deviceList = myAdapter.getDeviceList();
 				deviceList.clear();
-				myAdapter = new TransportAdapter(TransportActivity.this, groupName,deviceList,myAdapter.getDriverName(),myAdapter.getDriverPhone(),myAdapter.getCarNumber());
-				
+				myAdapter = new TransportAdapter(TransportActivity.this, groupName,deviceList,myAdapter.getDriverName(),myAdapter.getDriverPhone(),myAdapter.getCarNumber(),myAdapter.getAddress(),myAdapter.getDestination());
 				addItemListView.setAdapter(myAdapter);
 				addItemListView.expandGroup(1);
 				linearlayout_button.setVisibility(ViewGroup.GONE);
@@ -183,14 +190,20 @@ public class TransportActivity extends Activity {
 		}else if("".equals(myAdapter.getDriverPhone())){
 			Toast.makeText(getApplicationContext(), "请输入司机电话", Toast.LENGTH_SHORT).show();
 			return 0;
+		}else if("".equals(myAdapter.getAddress())){
+			Toast.makeText(getApplicationContext(), "请输入出发地", Toast.LENGTH_SHORT).show();
+			return 0;
+		}else if("".equals(myAdapter.getDestination())){
+			Toast.makeText(getApplicationContext(), "请输入目的地", Toast.LENGTH_SHORT).show();
+			return 0;
 		}else{
 			deviceList = myAdapter.getDeviceList();
-			DeviceServiceImple deviceDao = new DeviceServiceImple(TransportActivity.this);
+			DeviceServiceDao deviceDao = new DeviceServiceDao(TransportActivity.this);
 			for(Device device:deviceList){
 				int id = device.getId();
 				String name = device.getName();
 				HashMap<String, String> deviceMap = new HashMap<String, String>();
-				deviceMap = getDeviceMap(id, name, userId, 0, 0, 0);
+				deviceMap = getDeviceMap(id, name, userId, 0, 0, "0");
 				if (deviceDao.findDeviceById(id)) {
 					deviceDao.updateData(deviceMap);
 				} else {
@@ -202,32 +215,34 @@ public class TransportActivity extends Activity {
 	}
 	
 	public HashMap<String, String> getDeviceMap(int deviceId, String name,
-			int userId, int storeId, int mainDeviceId, int stateFlag) {
+			int userId, int storehouseId, int mainDeviceId, String batchNumber) {
 		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("id", deviceId + "");
 		map.put("name", name);
 		map.put("userId", userId + "");
-		map.put("storeId", storeId + "");
+		map.put("storeId", storehouseId + "");
 		map.put("mainDeviceId", mainDeviceId + "");
-		map.put("stateFlag", stateFlag + "");
+		map.put("batchNumber", batchNumber);
 		return map;
 	}
 	
-	public HashMap<String, String> getHistoryMap(String time, int optionType,
-			int userId, int storeId, int deviceId, int mainDeviceId,
-			int upLoadFlag, String driverName, String carNum, String driverTel) {
+	public HashMap<String, String> getTransport(int userId,String driver,String telephone,String destination,String address,int deviceId,int uploadFlag){
 		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("deviceId", deviceId + "");
-		map.put("time", time);
-		map.put("userId", userId + "");
-		map.put("storeId", storeId + "");
-		map.put("mainDeviceId", mainDeviceId + "");
-		map.put("upLoadFlag", upLoadFlag + "");
-		map.put("optionType", optionType + "");
-		map.put("driverName", driverName);
-		map.put("carNum", carNum);
-		map.put("driverTel", driverTel);
-		return map;
+		map.put("userId", userId+"");
+		map.put("driver", driver);
+		map.put("telephone", telephone);
+		map.put("destination", destination);
+		map.put("address", address);
+		map.put("deviceId", deviceId+"");
+		map.put("uploadFlag", uploadFlag+"");
+//		list.get(j).get("userId"),
+//		list.get(j).get("driver"),
+//		list.get(j).get("telephone"),
+//		list.get(j).get("destination"),
+//		list.get(j).get("address"),
+//		list.get(j).get("deviceId"),
+//		list.get(j).get("upLoadFlag")
+		return map;		
 	}
 
 	@SuppressLint("SimpleDateFormat") 
@@ -235,21 +250,23 @@ public class TransportActivity extends Activity {
 		
 		deviceList = myAdapter.getDeviceList();
 		Collections.reverse(deviceList);
-		HistoryServiceImple historyDao = new HistoryServiceImple(TransportActivity.this);
+		TransportServiceDao transportServiceDao = new TransportServiceDao(TransportActivity.this);
+		List<HashMap<String, String>> list = new ArrayList<HashMap<String,String>>();
 		for(Device device:deviceList){
 			int id = device.getId();
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String time = df.format(new Date());
-			HashMap<String, String> historyMap = new HashMap<String, String>();
-			historyMap = getHistoryMap(time, 4, userId, 0, id, 0, upLoadFlag, myAdapter.getDriverName(), myAdapter.getDriverPhone(), myAdapter.getCarNumber());
-			historyDao.addHistory(historyMap);
+			HashMap<String, String> transportMap = new HashMap<String, String>();
+			transportMap = getTransport(userId, myAdapter.getDriverName(), myAdapter.getDriverPhone(), myAdapter.getDestination(), myAdapter.getAddress(), id, upLoadFlag);
+			list.add(transportMap);
 		}
+		transportServiceDao.add(list);
 		upLoadFlag = 0;
 		saveDataFlag = 0;
 		Toast.makeText(getApplicationContext(), "记录保存成功", Toast.LENGTH_SHORT).show();
 		deviceList = myAdapter.getDeviceList();
 		deviceList.clear();
-		myAdapter = new TransportAdapter(TransportActivity.this, groupName,deviceList,myAdapter.getDriverName(),myAdapter.getDriverPhone(),myAdapter.getCarNumber());
+		myAdapter = new TransportAdapter(TransportActivity.this, groupName,deviceList,myAdapter.getDriverName(),myAdapter.getDriverPhone(),myAdapter.getCarNumber(),myAdapter.getAddress(),myAdapter.getDestination());
 		addItemListView.setAdapter(myAdapter);
 		addItemListView.expandGroup(1);
 		linearlayout_button.setVisibility(ViewGroup.GONE);
@@ -279,7 +296,7 @@ public class TransportActivity extends Activity {
 												public void onClick(DialogInterface dialog,int which) {
 													deviceList = myAdapter.getDeviceList();
 													deviceList.clear();
-													myAdapter = new TransportAdapter(TransportActivity.this, groupName,deviceList,myAdapter.getDriverName(),myAdapter.getDriverPhone(),myAdapter.getCarNumber());
+													myAdapter = new TransportAdapter(TransportActivity.this, groupName,deviceList,myAdapter.getDriverName(),myAdapter.getDriverPhone(),myAdapter.getCarNumber(),myAdapter.getAddress(),myAdapter.getDestination());
 													addItemListView.setAdapter(myAdapter);
 													addItemListView.expandGroup(1);
 													linearlayout_button.setVisibility(ViewGroup.GONE);

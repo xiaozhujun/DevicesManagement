@@ -2,14 +2,10 @@ package com.csei.adapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
+import com.csei.database.entity.Contract;
 import com.csei.database.entity.Device;
-import com.csei.database.entity.Site;
-import com.csei.database.entity.Store;
 import com.csei.devicesmanagement.R;
-
 import android.content.Context;
-import android.provider.VoicemailContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,44 +13,28 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 public class InstallAdapter extends BaseExpandableListAdapter{
-	
+
 	private Context context;
 	private String[] groupName;
-	private ArrayList<Site> siteList;
 	private ArrayList<Device> deviceList;
+	private ArrayList<Contract> contractList;
+	private String installType;
+	private String installMan;
+	private String installStatus;
 	private LayoutInflater inflater = null;
-	private static int isSelected ;
-	private Device mainDevice;
+	private int contractSelected;
 	
-	//很忙的好吗
-	public InstallAdapter(Context context,String[] groupName,ArrayList<Site> siteList,ArrayList<Device> deviceList,int isSelected,Device mainDevice){
-		this.context = context;
-		this.groupName = groupName;
-		Collections.reverse(siteList);
-		this.siteList = siteList;
-		Collections.reverse(deviceList);
-		this.deviceList = deviceList;
-		inflater = LayoutInflater.from(context);
-		this.isSelected = isSelected;
-		this.mainDevice = mainDevice;
-	} 
+	private EditText installTypeEdt;
+	private EditText installManEdt;
+	private EditText installStatusEdt;
 	
-	public void setSiteList(ArrayList<Site> siteList){
-		Collections.reverse(siteList);
-		this.siteList = siteList;
-	}
-
-	public ArrayList<Site> getSiteList(){
-		Collections.reverse(siteList);
-		return siteList;
-	}
-	
-	public void setDeviceList(ArrayList<Device> deviceList){
+	public void setDevicelist(ArrayList<Device> deviceList){
 		Collections.reverse(deviceList);
 		this.deviceList = deviceList;
 	}
@@ -64,23 +44,36 @@ public class InstallAdapter extends BaseExpandableListAdapter{
 		return deviceList;
 	}
 	
-	public void setIsSelected(int isSelected){
-		this.isSelected = isSelected;
+	public int getContractSelected(){
+		return contractSelected;
+	}
+
+	public String getInstallType(){
+		return installType;
 	}
 	
-	public int getIsSelected(){
-		return isSelected;
+	public String getInstallMan(){
+		return installMan;
 	}
 	
-	public void setMainDevice(Device mainDevice){
-		this.mainDevice = mainDevice;
-		InstallAdapter.this.notifyDataSetChanged();
+	public String getInstallStatus(){
+		return installStatus;
 	}
 	
-	public Device getMainDevice(){
-		return mainDevice;
+	public InstallAdapter(Context context,String[] groupName,ArrayList<Contract> contractList,ArrayList<Device> deviceList,String installType,String installMan,String installStatus,int contractSelected){
+		this.context = context;
+		this.groupName = groupName;
+		this.contractList = contractList;
+		Collections.reverse(deviceList);
+		this.deviceList = deviceList;
+		inflater = LayoutInflater.from(context);
+		this.installType = installType;
+		this.installMan = installMan;
+		this.installStatus = installStatus;
+		
+		this.contractSelected = contractSelected;
 	}
-	
+
 	@Override
 	public int getGroupCount() {
 		return groupName.length;
@@ -89,11 +82,148 @@ public class InstallAdapter extends BaseExpandableListAdapter{
 	@Override
 	public int getChildrenCount(int groupPosition) {
 		if(groupPosition==0)
-			return siteList.size();
+			return contractList.size();
 		else if(groupPosition==1)
+			return 1;
+		else if (deviceList.isEmpty()) 
 			return 1;
 		else
 			return deviceList.size();
+	}
+
+	@Override
+	public boolean hasStableIds() {
+		return true;
+	}
+
+	@Override
+	public View getGroupView(int groupPosition, boolean isExpanded,
+			View convertView, ViewGroup parent) {
+		convertView = inflater.inflate(R.layout.listitem_stock_group, null);
+		TextView groupnametv = (TextView) convertView.findViewById(R.id.groupnametv);
+		
+		groupnametv.setText(groupName[groupPosition]);
+		return convertView;
+	}
+
+	@Override
+	public View getChildView(int groupPosition, final int childPosition,
+			boolean isLastChild, View convertView, ViewGroup parent) {
+		if(groupPosition==0){
+			convertView = inflater.inflate(R.layout.listitem_stock_store, null);
+			TextView cangkuxinxitv = (TextView) convertView.findViewById(R.id.cangkuxinxitv);
+			TextView cangkuidtv = (TextView) convertView.findViewById(R.id.cangkuidtv);
+			TextView cangkunametv = (TextView) convertView.findViewById(R.id.cangkunametv);
+			TextView cangkuaddresstv = (TextView) convertView.findViewById(R.id.cangkuaddresstv);
+			TextView cangkutelephonetv = (TextView) convertView.findViewById(R.id.cangkutelephonetv);
+			CheckBox cangkucb = (CheckBox) convertView.findViewById(R.id.cangkucb);
+			
+			if(contractSelected==childPosition){
+				cangkucb.setChecked(true);
+			}
+			
+			cangkucb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if(isChecked){
+						contractSelected = childPosition;
+					}else {
+						contractSelected = -1;
+					}
+					InstallAdapter.this.notifyDataSetChanged(); 
+				}
+			});
+
+			cangkuxinxitv.setText("合同信息");
+			cangkuidtv.setText("合同Id:  "+contractList.get(childPosition).getId()+"");
+			cangkunametv.setText("合同客户:  "+contractList.get(childPosition).getCustomerName());
+			cangkuaddresstv.setText("合同期限:  "+contractList.get(childPosition).getStartTime()+"至"+contractList.get(childPosition).getEndTime());
+			cangkutelephonetv.setText("签署日期:  "+contractList.get(childPosition).getSignTime());
+
+			return convertView;
+		}else if(groupPosition==1){
+			convertView = inflater.inflate(R.layout.listitem_install_install, null);
+			installTypeEdt = (EditText)convertView.findViewById(R.id.installtypeedt);
+			installManEdt = (EditText) convertView.findViewById(R.id.installmanedt);
+			installStatusEdt = (EditText) convertView.findViewById(R.id.installstatusedt);
+			if(!"".equals(installType)){
+				installTypeEdt.setText(installType);
+			}if(!"".equals(installMan)){
+				installManEdt.setText(installMan);
+			}if(!"".equals(installStatus)){
+				installStatusEdt.setText(installStatus);
+			}
+			
+			installTypeEdt.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {  
+			    @Override  
+			    public void onFocusChange(View v, boolean hasFocus) {  
+			        if(hasFocus) {
+			        	// 此处为得到焦点时的处理内容
+			        } else {
+			        	installType = installTypeEdt.getText().toString();
+			        }
+			    	}
+			});
+			
+			installManEdt.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {  
+			    @Override  
+			    public void onFocusChange(View v, boolean hasFocus) {  
+			        if(hasFocus) {
+			        	// 此处为得到焦点时的处理内容
+			        } else {
+			        	installMan = installManEdt.getText().toString();
+			        }
+			    	}
+			});
+			
+			installStatusEdt.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {  
+			    @Override  
+			    public void onFocusChange(View v, boolean hasFocus) {  
+			        if(hasFocus) {
+			        	// 此处为得到焦点时的处理内容
+			        } else {
+			        	installStatus = installStatusEdt.getText().toString();
+			        }
+			    	}
+			});
+			
+			return convertView;
+		}else{
+			if (deviceList.isEmpty()) {
+				convertView = inflater.inflate(R.layout.listitem_stock_device, null);
+				ImageView shebeiimg = (ImageView) convertView.findViewById(R.id.shebeiimg);
+				Button shebeishanchubtn = (Button) convertView.findViewById(R.id.shebeishanchubtn);
+				
+				shebeishanchubtn.setVisibility(View.GONE);
+				shebeiimg.setImageResource(R.drawable.button_my_login_down);
+			}else {
+				convertView = inflater.inflate(R.layout.listitem_stock_device, null);
+				TextView shebeixinxitv = (TextView) convertView.findViewById(R.id.shebeixinxitv);
+				TextView shebeiidtv = (TextView) convertView.findViewById(R.id.shebeiidtv);
+				TextView shebeinametv = (TextView) convertView.findViewById(R.id.shebeinametv);
+				Button shebeishanchubtn = (Button) convertView.findViewById(R.id.shebeishanchubtn);
+				
+				shebeixinxitv.setText("设备信息");
+				shebeishanchubtn.setText("删除");
+				shebeiidtv.setText("设备Id:  "+deviceList.get(childPosition).getId()+"");
+				shebeinametv.setText("设备名称:  "+deviceList.get(childPosition).getName());
+				shebeishanchubtn.setOnClickListener(new View.OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						deviceList.remove(childPosition);
+						InstallAdapter.this.notifyDataSetChanged();
+					}
+				});
+			}
+			return convertView;
+		}
+	}
+
+	@Override
+	public boolean isChildSelectable(int groupPosition, int childPosition) {
+		return false;
 	}
 
 	@Override
@@ -120,96 +250,5 @@ public class InstallAdapter extends BaseExpandableListAdapter{
 		return 0;
 	}
 
-	@Override
-	public boolean hasStableIds() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public View getGroupView(int groupPosition, boolean isExpanded,
-			View convertView, ViewGroup parent) {
-		convertView = inflater.inflate(R.layout.listitem_stock_group, null);
-		TextView groupnametv = (TextView) convertView.findViewById(R.id.groupnametv);
-		
-		groupnametv.setText(groupName[groupPosition]);
-		return convertView;
-	}
-
-	@Override
-	public View getChildView(int groupPosition, final int childPosition,
-			boolean isLastChild, View convertView, ViewGroup parent) {
-		if(groupPosition==0){
-			convertView = inflater.inflate(R.layout.listitem_stock_store, null);
-			TextView cangkuxinxitv = (TextView) convertView.findViewById(R.id.cangkuxinxitv);
-			TextView cangkuidtv = (TextView) convertView.findViewById(R.id.cangkuidtv);
-			TextView cangkunametv = (TextView) convertView.findViewById(R.id.cangkunametv);
-			TextView cangkuaddresstv = (TextView) convertView.findViewById(R.id.cangkuaddresstv);
-			TextView cangkutelephonetv = (TextView) convertView.findViewById(R.id.cangkutelephonetv);
-			CheckBox cangkucb = (CheckBox) convertView.findViewById(R.id.cangkucb);
-			
-			if(isSelected==childPosition){
-				cangkucb.setChecked(true);
-			}
-			
-			cangkucb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if(isChecked){
-						isSelected = childPosition;
-					}else {
-						isSelected = -1;
-					}
-					InstallAdapter.this.notifyDataSetChanged(); 
-				}
-			});
-
-			cangkuxinxitv.setText("工地信息");
-			cangkuidtv.setText("工地Id:  "+siteList.get(childPosition).getId()+"");
-			cangkunametv.setText("工地名称:  "+siteList.get(childPosition).getName());
-			cangkuaddresstv.setText("工地地址:  "+siteList.get(childPosition).getAddress());
-			cangkutelephonetv.setText("工地电话:  "+siteList.get(childPosition).getTelephone());
-			
-		}else if(groupPosition==1){
-			convertView = inflater.inflate(R.layout.listitem_stock_device, null);
-			TextView shebeixinxitv = (TextView) convertView.findViewById(R.id.shebeixinxitv);
-			TextView shebeiidtv = (TextView) convertView.findViewById(R.id.shebeiidtv);
-			TextView shebeinametv = (TextView) convertView.findViewById(R.id.shebeinametv);
-			Button shebeishanchubtn = (Button) convertView.findViewById(R.id.shebeishanchubtn);
-			
-			shebeishanchubtn.setText("删除");
-			shebeixinxitv.setText("主设备信息");
-			shebeiidtv.setText("设备Id:  "+mainDevice.getId()+"");
-			shebeinametv.setText("设备名称:  "+mainDevice.getName());
-			
-		}else if(groupPosition==2){
-			convertView = inflater.inflate(R.layout.listitem_stock_device, null);
-			TextView shebeixinxitv = (TextView) convertView.findViewById(R.id.shebeixinxitv);
-			TextView shebeiidtv = (TextView) convertView.findViewById(R.id.shebeiidtv);
-			TextView shebeinametv = (TextView) convertView.findViewById(R.id.shebeinametv);
-			Button shebeishanchubtn = (Button) convertView.findViewById(R.id.shebeishanchubtn);
-			
-			shebeixinxitv.setText("设备信息");
-			shebeishanchubtn.setText("删除");
-			shebeiidtv.setText("设备Id:  "+deviceList.get(childPosition).getId()+"");
-			shebeinametv.setText("设备名称:  "+deviceList.get(childPosition).getName());
-			
-			shebeishanchubtn.setOnClickListener(new View.OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					deviceList.remove(childPosition);
-					InstallAdapter.this.notifyDataSetChanged();
-				}
-			});
-		}
-		return convertView;
-	}
-
-	@Override
-	public boolean isChildSelectable(int groupPosition, int childPosition) {
-		return true;
-	}
-
 }
+
