@@ -33,20 +33,17 @@ public class LoginActivity extends Activity {
 	private String uname;
 	private String pswords;
 	private CheckBox show_passwords, remember_passwords;
-	private Informations informations = null;
 	private JSONObject jsonObject;
-	private String number1;
 	private String role1;
-	private String roleNum1;
 	private String name1;
-	private String userName1;
 	private String id1;
 	private String image1;
 	private String sex1;
-	private String userRole1;
+	private String status1;
+	private String appId1;
+	private String appName1;
 
 	private Handler handler;
-	private UserServiceDao userDao;
 
 	// private
 	@SuppressLint("HandlerLeak")
@@ -55,31 +52,30 @@ public class LoginActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-		userDao=new UserServiceDao(LoginActivity.this);
 
 		passwords = (EditText) findViewById(R.id.input_passwords);
 		username = (EditText) findViewById(R.id.input_username);
-		
+
 		username.setText("xiaozhujun");
 		passwords.setText("123456");
 
 		passwords.setTransformationMethod(PasswordTransformationMethod
 				.getInstance());
 
-//		passwords.setOnKeyListener(new OnKeyListener() {
-//
-//			@Override
-//			public boolean onKey(View v, int keyCode, KeyEvent event) {
-//				// TODO Auto-generated method stub
-//				if (keyCode == KeyEvent.KEYCODE_ENTER
-//						&& event.getAction() == KeyEvent.ACTION_DOWN) {
-//					uname = username.getText().toString().trim();
-//					pswords = passwords.getText().toString().trim();
-//					new Thread(new MyThread()).start();
-//				}
-//				return false;
-//			}
-//		});
+		passwords.setOnKeyListener(new OnKeyListener() {
+
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				// TODO Auto-generated method stub
+				if (keyCode == KeyEvent.KEYCODE_ENTER
+						&& event.getAction() == KeyEvent.ACTION_DOWN) {
+					uname = username.getText().toString().trim();
+					pswords = passwords.getText().toString().trim();
+					new Thread(new MyThread()).start();
+				}
+				return false;
+			}
+		});
 
 		show_passwords = (CheckBox) findViewById(R.id.show_passwords);
 		show_passwords
@@ -107,149 +103,98 @@ public class LoginActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 
-//				uname = username.getText().toString().trim();
-//				pswords = passwords.getText().toString().trim();
-//
-//				new Thread(new MyThread()).start();
-				Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-				intent.putExtra("id", "6");
-				intent.putExtra("name", "xiaozhujun");
-				startActivity(intent);
-				
+				uname = username.getText().toString().trim();
+				pswords = passwords.getText().toString().trim();
+
+				new Thread(new MyThread()).start();
+				// Intent intent = new
+				// Intent(LoginActivity.this,MainActivity.class);
+				// intent.putExtra("id", "6");
+				// intent.putExtra("name", "xiaozhujun");
+				// startActivity(intent);
+
 			}
 		});
 
+		handler = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				// TODO Auto-generated method stub
+				super.handleMessage(msg);
 
-//		handler = new Handler() {
-//			@Override
-//			public void handleMessage(Message msg) {
-//				// TODO Auto-generated method stub
-//				super.handleMessage(msg);
-//
-//				switch (msg.what) {
-//				case 1:
-//					Toast.makeText(getApplicationContext(), "登录成功", Toast.LENGTH_SHORT).show();
-//					Intent intent1 = new Intent(LoginActivity.this,
-//							MainActivity.class);
-//					HashMap<String, String> map=new HashMap<String,String>();
-//					map=(HashMap<String, String>) msg.obj;
-//					
-//					intent1.putExtra("id", map.get("id"));
-//					intent1.putExtra("name", map.get("name"));
-//					startActivity(intent1);
-//					finish();
-//					break;
-//				case 2:
-//					String errorString = "用户名或密码错误";
-//					Toast.makeText(getApplicationContext(), errorString,
-//							Toast.LENGTH_SHORT).show();
-//					break;
-//				case 3:
-//					String noNetWorkString = "请检查网络连接";
-//					Toast.makeText(getApplicationContext(), noNetWorkString,
-//							Toast.LENGTH_SHORT).show();
-//					break;
-//				}
-//
-//			}
-//		};
-//
-//	}
+				switch (msg.what) {
+				case 1:
+					Toast.makeText(getApplicationContext(), "登录成功",
+							Toast.LENGTH_SHORT).show();
+					Intent intent1 = new Intent(LoginActivity.this,
+							MainActivity.class);
+					HashMap<String, String> map = new HashMap<String, String>();
+					map = (HashMap<String, String>) msg.obj;
 
-//	class MyThread implements Runnable {
-//		public void run() {
-//			
-//			
-//			
-//			final boolean loginresult = CasClient.getInstance().login(name,
-//					pswords,
-//					getResources().getString(R.string.LOGIN_SECURITY_CHECK));
-//			final boolean noNetWork = CasClient.getInstance().login2(name,
-//					pswords,
-//					getResources().getString(R.string.LOGIN_SECURITY_CHECK));
-//
-//			if (loginresult) {
-//				if (userDao.findUserByUserName(name)) {
-//					id1=userDao.findIdByUserName(name)+"";
-//					name1=userDao.findNameByUserName(name);
-//				}else {
-//					String msg1 = CasClient.getInstance().doGet(
-//							getResources().getString(R.string.USER_GETIMF));
-//					try {
-//						jsonObject = (new JSONObject(msg1)).getJSONObject("data");
-//						number1 = jsonObject.getString("number");
-//						role1 = jsonObject.getString("role");
-//						roleNum1 = jsonObject.getString("roleNum");
-//						name1 = jsonObject.getString("name");
-//						userName1 = jsonObject.getString("userName");
-//						id1 = jsonObject.getString("id");
-//						image1 = jsonObject.getString("image");
-//						sex1 = jsonObject.getString("sex");
-//						userRole1 = jsonObject.getString("userRole");
-//					} catch (JSONException e) {
-//						e.printStackTrace();
-//					} catch (Exception e) {
-//						e.printStackTrace();
-//					}
-//					HashMap<String, String> map=new HashMap<>();
-//					map.put("id", id1);
-//					map.put("name", name1);
-//					map.put("userName", userName1);
-//					map.put("image", image1);
-//					map.put("sex", sex1);
-//					map.put("userRole", userRole1);
-//					userDao.addUser(map);
-//				}
-//
-//				
-//
-//				HashMap<String, String> map=new HashMap<String, String>();
-//				map.put("name", name);
-//				map.put("id", id1);
-//				Message msg = Message.obtain();
-//
-//				msg.obj=map;
-//				msg.what = 1;
-//				handler.sendMessage(msg);
-//			} else {
-//				if (noNetWork) {
-//					Message msg = Message.obtain();
-//					msg.what = 3;
-//					handler.sendMessage(msg);
-//				} else {
-//
-//					Message msg = Message.obtain();
-//					msg.what = 2;
-//					handler.sendMessage(msg);
-//				}
-//			}
-//			if (userDao.findUserByUserName(uname)) {
-//				HashMap<String, String> map=new HashMap<String,String>();
-//				map.put("id", userDao.findIdByUserName(uname)+"");
-//				map.put("name", userDao.findNameByUserName(uname)+"");
-//				Message msg=Message.obtain();
-//				msg.obj=map;
-//				msg.what=1;
-//				handler.sendMessage(msg);
-//			}else {
-//				HashMap<String, String> map=new HashMap<String,String>();
-//				map.put("id", 6+"");
-//				map.put("name", "肖竹军");
-//				map.put("userName", "xiaozhujun");
-//				map.put("image", null);
-//				map.put("sex", "男");
-//				map.put("userRole", "管理员");
-//				userDao.addUser(map);
-//				Message msg=Message.obtain();
-//				msg.obj=map;
-//				msg.what=1;
-//				handler.sendMessage(msg);
-//			}
-//			
-//			
-//		}
-//
-//	}
+					intent1.putExtra("id", map.get("id"));
+					intent1.putExtra("name", map.get("name"));
+					startActivity(intent1);
+					finish();
+					break;
+				case 2:
+					String errorString = "用户名或密码错误";
+					Toast.makeText(getApplicationContext(), errorString,
+							Toast.LENGTH_SHORT).show();
+					break;
+				case 3:
+					String noNetWorkString = "请检查网络连接";
+					Toast.makeText(getApplicationContext(), noNetWorkString,
+							Toast.LENGTH_SHORT).show();
+					break;
+				}
+
+			}
+		};
 
 	}
+
+	class MyThread implements Runnable {
+		public void run() {
+
+			final boolean loginresult = CasClient.getInstance().login(uname,
+					pswords,
+					getResources().getString(R.string.LOGIN_SECURITY_CHECK));
+
+			if (loginresult) {
+				String msg1 = CasClient.getInstance().doGet(
+						getResources().getString(R.string.USER_GETIMF));
+				try {
+					jsonObject = (new JSONObject(msg1)).getJSONObject("data");
+					id1 = jsonObject.getString("id");
+					name1 = jsonObject.getString("name");
+					sex1 = jsonObject.getString("sex");
+					role1 = jsonObject.getString("role");
+					status1 = jsonObject.getString("status");
+					appId1 = jsonObject.getString("appId");
+					appName1 = jsonObject.getString("appName");
+					image1 = jsonObject.getString("image");
+				} catch (JSONException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("name", name1);
+				map.put("id", id1);
+				Message msg = Message.obtain();
+
+				msg.obj = map;
+				msg.what = 1;
+				handler.sendMessage(msg);
+			} else {
+
+				Message msg = Message.obtain();
+				msg.what = 2;
+				handler.sendMessage(msg);
+			}
+		}
+
 	}
+
+}

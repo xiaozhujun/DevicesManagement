@@ -30,11 +30,11 @@ public class DBOptions extends SQLiteOpenHelper {
 		db.execSQL("CREATE TABLE IF NOT EXISTS CONTRACT(id integer primary key,name varchar(255),customerName varchar(255),number varchar(255),startTime varchar(255),endTime varchar(255),signTime varchar(255),appId integer)");
 		db.execSQL("CREATE TABLE IF NOT EXISTS DEVICE(id integer primary key,name varchar(255),number varchar(255),deviceType varchar(255),mainDeviceId integer,batchNumber varchar(255))");
 		//下面是记录表
-		db.execSQL("CREATE TABLE IF NOT EXISTS TRANSPORT(id integer primary key autoincrement,userId integer,driver varchar(255),telephone varchar(255),destination varchar(255),address varchar(255),deviceId integer,upLoadFlag integer)");
-		db.execSQL("CREATE TABLE IF NOT EXISTS STOCKIN(id integer primary key autoincrement,userId integer,storehouseId integer,number varchar(255),contractId integer,driver varchar(255),carNumber varchar(255),description varchar(255),deviceId integer,upLoadFlag integer)");
-		db.execSQL("CREATE TABLE IF NOT EXISTS STOCKOUT(id integer primary key autoincrement,userId integer,storehouseId integer,number varchar(255),contractId integer,driver varchar(255),carNumber varchar(255),description varchar(255),deviceId integer,upLoadFlag integer)");
-		db.execSQL("CREATE TABLE IF NOT EXISTS INSTALL(id integer primary key autoincrement,userId integer,contractId integer,type varchar(255),installMan varchar(255),installStatus varchar(255),deviceId integer,upLoadFlag integer)");
-		db.execSQL("CREATE TABLE IF NOT EXISTS UNINSTALL(id integer primary key autoincrement,userId integer,contractId integer,removeMan varchar(255),removeStatus varchar(255),deviceId integer,upLoadFlag integer)");
+		db.execSQL("CREATE TABLE IF NOT EXISTS TRANSPORT(id integer primary key autoincrement,userId integer,driver varchar(255),telephone varchar(255),destination varchar(255),address varchar(255),deviceId integer,upLoadFlag integer,image varchar(255))");
+		db.execSQL("CREATE TABLE IF NOT EXISTS STOCKIN(id integer primary key autoincrement,userId integer,storehouseId integer,number varchar(255),contractId integer,driver varchar(255),carNumber varchar(255),description varchar(255),deviceId integer,upLoadFlag integer,image varchar(255))");
+		db.execSQL("CREATE TABLE IF NOT EXISTS STOCKOUT(id integer primary key autoincrement,userId integer,storehouseId integer,number varchar(255),contractId integer,driver varchar(255),carNumber varchar(255),description varchar(255),deviceId integer,upLoadFlag integer,image varchar(255))");
+		db.execSQL("CREATE TABLE IF NOT EXISTS INSTALL(id integer primary key autoincrement,userId integer,contractId integer,type varchar(255),installMan varchar(255),installStatus varchar(255),deviceId integer,upLoadFlag integer,image varchar(255))");
+		db.execSQL("CREATE TABLE IF NOT EXISTS UNINSTALL(id integer primary key autoincrement,userId integer,contractId integer,removeMan varchar(255),removeStatus varchar(255),deviceId integer,upLoadFlag integer,image varchar(255))");
 		
 	
 	}

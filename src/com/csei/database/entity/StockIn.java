@@ -11,6 +11,14 @@ public class StockIn {
 	private String description;
 	private int deviceId;
 	private int upLoadFlag;
+	private String image;
+	
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
 	
 	public int getId(){
 		return id;

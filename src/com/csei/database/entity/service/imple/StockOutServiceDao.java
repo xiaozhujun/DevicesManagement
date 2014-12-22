@@ -26,7 +26,7 @@ public class StockOutServiceDao implements StockOutService{
 		db.beginTransaction();
 		for (int j = 0; j < list.size(); j++) {
 			db.execSQL(
-					"insert into stockout(userId,storehouseId,number,contractId,driver,carNumber,description,deviceId,upLoadFlag) values(?,?,?,?,?,?,?,?,?)",
+					"insert into stockout(userId,storehouseId,number,contractId,driver,carNumber,description,deviceId,upLoadFlag,image) values(?,?,?,?,?,?,?,?,?,?)",
 					new Object[] { list.get(j).get("userId"),
 							list.get(j).get("storehouseId"),
 							list.get(j).get("number"),
@@ -35,7 +35,8 @@ public class StockOutServiceDao implements StockOutService{
 							list.get(j).get("carNumber"),
 							list.get(j).get("description"),
 							list.get(j).get("deviceId"),
-							list.get(j).get("upLoadFlag") });
+							list.get(j).get("upLoadFlag"),
+							list.get(j).get("image") });
 		}
 
 		// 事务成功
@@ -70,6 +71,8 @@ public class StockOutServiceDao implements StockOutService{
 					cursor.getInt(cursor.getColumnIndex("deviceId")) + "");
 			map.put("upLoadFlag",
 					cursor.getInt(cursor.getColumnIndex("upLoadFlag")) + "");
+			map.put("image",
+					cursor.getString(cursor.getColumnIndex("image")));
 			list.add(map);
 		}
 		return list;
@@ -100,6 +103,8 @@ public class StockOutServiceDao implements StockOutService{
 					cursor.getInt(cursor.getColumnIndex("deviceId")) + "");
 			map.put("upLoadFlag",
 					cursor.getInt(cursor.getColumnIndex("upLoadFlag")) + "");
+			map.put("image",
+					cursor.getString(cursor.getColumnIndex("image")));
 			list.add(map);
 		}
 		return list;

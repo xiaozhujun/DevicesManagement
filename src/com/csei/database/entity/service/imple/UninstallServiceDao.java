@@ -27,13 +27,14 @@ public class UninstallServiceDao implements UninstallService {
 		db.beginTransaction();
 		for (int j = 0; j < list.size(); j++) {
 			db.execSQL(
-					"insert into uninstall(userId,contractId,removeMan,removeStatus,deviceId,upLoadFlag) values(?,?,?,?,?,?)",
+					"insert into uninstall(userId,contractId,removeMan,removeStatus,deviceId,upLoadFlag,image?) values(?,?,?,?,?,?,?)",
 					new Object[] { list.get(j).get("userId"),
 							list.get(j).get("contractId"),
 							list.get(j).get("removeMan"),
 							list.get(j).get("removeStatus"),
 							list.get(j).get("deviceId"),
-							list.get(j).get("upLoadFlag") });
+							list.get(j).get("upLoadFlag"),
+							list.get(j).get("image") });
 		}
 
 		// 事务成功
@@ -65,6 +66,8 @@ public class UninstallServiceDao implements UninstallService {
 					cursor.getInt(cursor.getColumnIndex("deviceId")) + "");
 			map.put("upLoadFlag",
 					cursor.getInt(cursor.getColumnIndex("upLoadFlag")) + "");
+			map.put("image",
+					cursor.getString(cursor.getColumnIndex("image")));
 			list.add(map);
 		}
 		return list;
@@ -91,6 +94,8 @@ public class UninstallServiceDao implements UninstallService {
 					cursor.getInt(cursor.getColumnIndex("deviceId")) + "");
 			map.put("upLoadFlag",
 					cursor.getInt(cursor.getColumnIndex("upLoadFlag")) + "");
+			map.put("image",
+					cursor.getString(cursor.getColumnIndex("image")));
 			list.add(map);
 		}
 		return list;

@@ -27,14 +27,15 @@ public class TransportServiceDao implements TrasnportService {
 		db.beginTransaction();
 		for (int j = 0; j < list.size(); j++) {
 			db.execSQL(
-					"insert into transport(userId,driver,telephone,destination,address,deviceId,upLoadFlag) values(?,?,?,?,?,?,?)",
+					"insert into transport(userId,driver,telephone,destination,address,deviceId,upLoadFlag,image) values(?,?,?,?,?,?,?,?)",
 					new Object[] { list.get(j).get("userId"),
 							list.get(j).get("driver"),
 							list.get(j).get("telephone"),
 							list.get(j).get("destination"),
 							list.get(j).get("address"),
 							list.get(j).get("deviceId"),
-							list.get(j).get("upLoadFlag") });
+							list.get(j).get("upLoadFlag"),
+							list.get(j).get("image") });
 		}
 
 		// 事务成功
@@ -67,6 +68,8 @@ public class TransportServiceDao implements TrasnportService {
 					cursor.getInt(cursor.getColumnIndex("deviceId")) + "");
 			map.put("upLoadFlag",
 					cursor.getInt(cursor.getColumnIndex("upLoadFlag")) + "");
+			map.put("image",
+					cursor.getString(cursor.getColumnIndex("image")));
 			list.add(map);
 		}
 		return list;
@@ -94,6 +97,8 @@ public class TransportServiceDao implements TrasnportService {
 					cursor.getInt(cursor.getColumnIndex("deviceId")) + "");
 			map.put("upLoadFlag",
 					cursor.getInt(cursor.getColumnIndex("upLoadFlag")) + "");
+			map.put("image",
+					cursor.getString(cursor.getColumnIndex("image")));
 			list.add(map);
 		}
 		return list;

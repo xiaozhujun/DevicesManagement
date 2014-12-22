@@ -24,6 +24,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHeaderValueParser;
 import org.apache.http.message.BasicHeaderValueFormatter;
 import org.apache.http.message.BasicNameValuePair;
@@ -32,10 +33,12 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
+import org.json.JSONObject;
 
 import android.R.integer;
 import android.util.Log;
@@ -270,24 +273,89 @@ public class CasClient {
 		FileBody imageBody = new FileBody(file);
 		entity.addPart("filename", imageBody);
 
-		StringBody userId = new StringBody(params.get("userId"));
-		StringBody deviceNum = new StringBody(params.get("deviceNum"));
-		StringBody tagArea = new StringBody(params.get("tagArea"),
-				Charset.forName("UTF-8"));
-
-		Log.i("userId", userId.toString());
-		Log.i("deviceNum", deviceNum.toString());
-		Log.i("tagArea", tagArea.toString());
-
-		entity.addPart("userId", userId);
-		entity.addPart("deviceNumber", deviceNum);
-		entity.addPart("inspectAreaName", tagArea);
+		StringBody id = new StringBody(params.get("id"));
+		
+		entity.addPart("transportId", id);
+		entity.addPart("stockInId", id);
+		entity.addPart("stockOutId", id);
+		entity.addPart("installationId", id);
+		entity.addPart("removeId", id);
 
 		httppost.setEntity(entity);
 		HttpResponse response = httpClient.execute(httppost);
 		HttpEntity resEntity = response.getEntity();
 		return EntityUtils.toString(resEntity);
 	}
+
+	
+	synchronized public String doSendHistorys2(String service,
+			HashMap<String, String> params) throws ClientProtocolException,
+			IOException {
+		httpClient.getParams().setParameter(
+				CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+		HttpPost httppost = new HttpPost(service);
+		MultipartEntity entity = new MultipartEntity(
+				HttpMultipartMode.BROWSER_COMPATIBLE, null,
+				Charset.forName("UTF-8"));
+
+		StringBody transportId = new StringBody(params.get("transportId"));
+		
+		entity.addPart("transportId", transportId);
+
+		httppost.setEntity(entity);
+		HttpResponse response = httpClient.execute(httppost);
+		HttpEntity resEntity = response.getEntity();
+		return EntityUtils.toString(resEntity);
+	}
+	
+	synchronized public String doSendHistorys(String service,
+			JSONObject jsonObject) {
+		Log.i("cas client doPost url:", service);
+		HttpPost httpPost = new HttpPost(service);
+		try {
+			List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+			
+//			history.put("deviceId", map.get("deviceId"));
+//			history.put("driver", map.get("driverName"));
+//			history.put("telephone", map.get("driverTel"));
+//			history.put("destination", map.get("destination"));
+//			history.put("address", map.get("address"));
+			
+			nvps.add(new BasicNameValuePair("jsonString", String.valueOf(jsonObject)));
+			
+			
+//			StringEntity sEntity=new StringEntity(jsonObject.toString());
+//			
+//			Log.i("ssdadasdad", String.valueOf(jsonObject));
+//			Log.i("ssdadadad", String.valueOf(sEntity));
+//			
+//			sEntity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+//            httpPost.setEntity(sEntity);
+			
+//			httpPost.setEntity(new UrlEncodedFormEntity(sEntity, HTTP.UTF_8));
+
+			httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+			
+			synchronized (httpClient) {
+				HttpResponse response = httpClient.execute(httpPost);
+				String responseBody = getResponseBody(response);
+				switch (response.getStatusLine().getStatusCode()) {
+				case 200: {
+					Log.i("cas client doSendHistorys response:", responseBody);
+					return responseBody;
+				}
+				default:
+					break;
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 
 	public String doGet(String service) {
 		Log.i("cas client doGet url:", service);

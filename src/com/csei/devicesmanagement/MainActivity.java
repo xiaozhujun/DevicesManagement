@@ -17,6 +17,7 @@ import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -78,6 +79,8 @@ public class MainActivity extends Activity {
 		Intent intent11=getIntent();
 		userId=intent11.getStringExtra("id");
 		userName=intent11.getStringExtra("name");
+		Log.i("userName", userName);
+		Log.i("id", userId);
 		account=(RelativeLayout) findViewById(R.id.tv_topbar_right_map_layout_main);
 		account.setOnClickListener(new View.OnClickListener() {
 

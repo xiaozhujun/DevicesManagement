@@ -6,10 +6,13 @@ import java.util.Collections;
 import com.csei.database.entity.Contract;
 import com.csei.database.entity.Device;
 import com.csei.database.entity.Store;
+import com.csei.devicesmanagement.CameraActivity;
 import com.csei.devicesmanagement.R;
 
 import android.R.integer;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +47,11 @@ public class StockListAdapter extends BaseExpandableListAdapter{
 	private EditText driverNameEdt;
 	private EditText driverPhoneEdt;
 	private EditText carNumberEdt;
+	
+	private Activity mActivity;
+	private String name;
+	
+	
 	
 	public void setStoreList(ArrayList<Store> storeList){
 		this.storeList = storeList;
@@ -83,8 +91,9 @@ public class StockListAdapter extends BaseExpandableListAdapter{
 		return carNumber;
 	}
 	
-	public StockListAdapter(Context context,String[] groupName,ArrayList<Contract> contractList,ArrayList<Store> storeList,ArrayList<Device> deviceList,int contractSelected,int storeSelected,String driverName,String driverPhone,String carNumber){
+	public StockListAdapter(Context context,String[] groupName,ArrayList<Contract> contractList,ArrayList<Store> storeList,ArrayList<Device> deviceList,int contractSelected,int storeSelected,String driverName,String driverPhone,String carNumber,String activityName){
 		this.context = context;
+		this.mActivity=(Activity) context;
 		this.groupName = groupName;
 		this.contractList = contractList;
 		this.storeList = storeList;
@@ -96,6 +105,7 @@ public class StockListAdapter extends BaseExpandableListAdapter{
 		this.driverName = driverName;
 		this.driverPhone = driverPhone;
 		this.carNumber = carNumber;
+		this.name=activityName;
 	}
 
 	@Override
@@ -264,7 +274,9 @@ public class StockListAdapter extends BaseExpandableListAdapter{
 				convertView = inflater.inflate(R.layout.listitem_stock_device, null);
 				ImageView shebeiimg = (ImageView) convertView.findViewById(R.id.shebeiimg);
 				Button shebeishanchubtn = (Button) convertView.findViewById(R.id.shebeishanchubtn);
+				Button photobtn = (Button) convertView.findViewById(R.id.photobtn);
 				
+				photobtn.setVisibility(View.GONE);
 				shebeishanchubtn.setVisibility(View.GONE);
 				shebeiimg.setImageResource(R.drawable.button_my_login_down);
 			}else {
@@ -273,6 +285,26 @@ public class StockListAdapter extends BaseExpandableListAdapter{
 				TextView shebeiidtv = (TextView) convertView.findViewById(R.id.shebeiidtv);
 				TextView shebeinametv = (TextView) convertView.findViewById(R.id.shebeinametv);
 				Button shebeishanchubtn = (Button) convertView.findViewById(R.id.shebeishanchubtn);
+				Button photobtn = (Button) convertView.findViewById(R.id.photobtn);
+				photobtn.setText("拍照");
+				photobtn.setOnClickListener(new View.OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						//拍照操作
+						Intent intent = new Intent(context,
+								CameraActivity.class);
+						intent.putExtra("i", childPosition);
+						intent.putExtra("activity", name);
+						if (name.equals("StockInActivity")) {
+							intent.putExtra("activityName", "stockin");
+						}else {
+							intent.putExtra("activityName", "stockout");
+						}
+						
+						mActivity.startActivityForResult(intent, 0);
+					}
+				});
 				
 				shebeixinxitv.setText("设备信息");
 				shebeishanchubtn.setText("删除");

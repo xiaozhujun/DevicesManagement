@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import com.csei.database.entity.Device;
+import com.csei.devicesmanagement.CameraActivity;
 import com.csei.devicesmanagement.R;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +38,11 @@ public class TransportAdapter extends BaseExpandableListAdapter{
 	private String address;
 	private String destination;
 	
+	private Activity mActivity;
+	
 	public TransportAdapter(Context context,String[] groupName,ArrayList<Device> deviceList,String driverName,String driverPhone,String carNumber,String address,String destination){
 		this.context = context;
+		this.mActivity=(Activity) context;
 		this.groupName = groupName;
 		Collections.reverse(deviceList);
 		this.deviceList = deviceList;
@@ -224,6 +230,21 @@ public class TransportAdapter extends BaseExpandableListAdapter{
 				TextView shebeiidtv = (TextView) convertView.findViewById(R.id.shebeiidtv);
 				TextView shebeinametv = (TextView) convertView.findViewById(R.id.shebeinametv);
 				Button shebeishanchubtn = (Button) convertView.findViewById(R.id.shebeishanchubtn);
+				Button photobtn = (Button) convertView.findViewById(R.id.photobtn);
+				photobtn.setText("拍照");
+				photobtn.setOnClickListener(new View.OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						//拍照操作
+						Intent intent = new Intent(context,
+								CameraActivity.class);
+						intent.putExtra("i", childPosition);
+						intent.putExtra("activity", "TransportActivity");
+						intent.putExtra("activityName", "transport");
+						mActivity.startActivityForResult(intent, 0);
+					}
+				});
 				
 				shebeixinxitv.setText("设备信息");
 				shebeishanchubtn.setText("删除");

@@ -27,14 +27,15 @@ public class InstallServiceDao implements InstallService {
 		db.beginTransaction();
 		for (int j = 0; j < list.size(); j++) {
 			db.execSQL(
-					"insert into install(userId,contractId,type,installMan,installStatus,deviceId,upLoadFlag) values(?,?,?,?,?,?,?)",
+					"insert into install(userId,contractId,type,installMan,installStatus,deviceId,upLoadFlag,image) values(?,?,?,?,?,?,?,?)",
 					new Object[] { list.get(j).get("userId"),
 							list.get(j).get("contractId"),
 							list.get(j).get("type"),
 							list.get(j).get("installMan"),
 							list.get(j).get("installStatus"),
 							list.get(j).get("deviceId"),
-							list.get(j).get("upLoadFlag") });
+							list.get(j).get("upLoadFlag"),
+							list.get(j).get("image") });
 		}
 
 		// 事务成功
@@ -66,6 +67,8 @@ public class InstallServiceDao implements InstallService {
 					cursor.getInt(cursor.getColumnIndex("deviceId")) + "");
 			map.put("upLoadFlag",
 					cursor.getInt(cursor.getColumnIndex("upLoadFlag")) + "");
+			map.put("image",
+					cursor.getString(cursor.getColumnIndex("image")));
 			list.add(map);
 		}
 		return list;
@@ -93,6 +96,8 @@ public class InstallServiceDao implements InstallService {
 					cursor.getInt(cursor.getColumnIndex("deviceId")) + "");
 			map.put("upLoadFlag",
 					cursor.getInt(cursor.getColumnIndex("upLoadFlag")) + "");
+			map.put("image",
+					cursor.getString(cursor.getColumnIndex("image")));
 			list.add(map);
 		}
 		return list;

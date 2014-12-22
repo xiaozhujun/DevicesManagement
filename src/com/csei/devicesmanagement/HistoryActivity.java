@@ -21,7 +21,9 @@ import com.csei.database.entity.service.imple.UninstallServiceDao;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 public class HistoryActivity extends Activity{
@@ -30,6 +32,8 @@ public class HistoryActivity extends Activity{
 	private String[] groupName;
 	
 	private ExpandableListView expandableListView;
+
+	private ImageView left_back;
 	
 	private List<HashMap<String, String>> stockInList;
 	private List<HashMap<String, String>> stockOutList;
@@ -56,8 +60,16 @@ public class HistoryActivity extends Activity{
 		MyApplication.getInstance().addActivity(this);
 		setContentView(R.layout.activity_history);
 		userId = Integer.parseInt(getIntent().getStringExtra("userId"));
-		
+		left_back = (ImageView) findViewById(R.id.iv_topbar_left_back1);
 		expandableListView = (ExpandableListView) findViewById(R.id.expandlistview_history);
+		
+		left_back.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
 		
 		initData();
 		

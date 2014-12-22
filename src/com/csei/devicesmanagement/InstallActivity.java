@@ -5,14 +5,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
+
 import com.csei.adapter.InstallAdapter;
-import com.csei.adapter.StockListAdapter;
 import com.csei.application.MyApplication;
+import com.csei.client.CasClient;
 import com.csei.database.entity.Contract;
 import com.csei.database.entity.Device;
-import com.csei.database.entity.Store;
-import com.csei.database.entity.service.imple.DeviceServiceDao;
 import com.csei.database.entity.service.imple.InstallServiceDao;
+import com.csei.devicesmanagement.TransportActivity.MyThread;
+import com.csei.util.JSONUtils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -20,9 +26,11 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -54,6 +62,9 @@ public class InstallActivity extends Activity {
 	private String installType;
 	private String installMan;
 	private String installStatus;
+	private String[] image=new String[100];
+	private ProgressDialog progressDialog;
+	private Builder alertDialog;
 	
 	public void initData(){
 		
@@ -105,7 +116,8 @@ public class InstallActivity extends Activity {
 		saveButton = (Button) findViewById(R.id.savebutton_install);
 		cancelButton = (Button) findViewById(R.id.cancelbutton_install);
 		linearlayout_button = (LinearLayout) findViewById(R.id.linearlayout_button);
-		
+
+		uploadDialogShow();
 		initData();
 		myAdapter = new InstallAdapter(InstallActivity.this,groupName,contractList,deviceList,installType,installMan,installStatus,contractSelected);
 		linearlayout_button.setVisibility(ViewGroup.GONE);
@@ -113,58 +125,29 @@ public class InstallActivity extends Activity {
 		addItemListView.setAdapter(myAdapter);
 		addItemListView.expandGroup(2);
 		
+
 		handler = new Handler() {
 			public void handleMessage(Message msg) {
 				super.handleMessage(msg);
 				switch (msg.what) {
-				case 1:
-					dialog.dismiss();
-					final int deviceId = (int)(1+Math.random()*(1000-1+1));
-//					if (deviceId<200) {
-//						mainDevice = myAdapter.getMainDevice();
-//						if(mainDevice==null){
-//							mainDevice = new Device();
-//							mainDevice.setId(deviceId);
-//							mainDevice.setName("这是主设备");
-//							myAdapter.setMainDevice(mainDevice);
-//							addItemListView.expandGroup(1);
-//						}else{
-//							Builder alertDialog = new AlertDialog.Builder(InstallActivity.this);
-//							alertDialog.setTitle("提示").setMessage("是否更换主设备？")
-//							.setNegativeButton("取消", null)
-//							.setPositiveButton("更换",new DialogInterface.OnClickListener() {
-//								@Override
-//								public void onClick(DialogInterface dialog,int which) {
-//									mainDevice = new Device();
-//									mainDevice.setId(deviceId);
-//									mainDevice.setName("这是主设备");
-//									myAdapter.setMainDevice(mainDevice);
-//									addItemListView.expandGroup(1);
-//								}}).show();
-//						}
-//					}else{
-						Device device = new Device();
-						device.setId(deviceId);
-						device.setName("塔吊");
-						deviceList = myAdapter.getDeviceList();
-						deviceList.add(device);
-						installType = myAdapter.getInstallType();
-						installMan = myAdapter.getInstallMan();
-						installStatus = myAdapter.getInstallStatus();
-						contractSelected = myAdapter.getContractSelected();
-						myAdapter = new InstallAdapter(InstallActivity.this,groupName,contractList,deviceList,installType,installMan,installStatus,contractSelected);
-						addItemListView.setAdapter(myAdapter);
-						addItemListView.expandGroup(2);
-						linearlayout_button.setVisibility(ViewGroup.VISIBLE);
-//					}
-					break;
+				
 				case 2:
 					dialog.dismiss();
-					Toast.makeText(getApplicationContext(), "上传成功", Toast.LENGTH_LONG).show();
 					upLoadFlag = 1;
-					if(saveDataFlag==1)
-						saveHistory();
+					saveHistory();
+					Toast.makeText(getApplicationContext(), "上传成功",
+							Toast.LENGTH_LONG).show();
 					break;
+				case 3:
+					progressDialog.dismiss();
+					alertDialog.setTitle("提示").setMessage("图片上传成功").show();
+					break;
+				case 4:
+					progressDialog.dismiss();
+					alertDialog.setTitle("提示").setMessage("图片上传失败，请稍后重试")
+							.show();
+					break;
+
 				default:
 					break;
 				}
@@ -184,13 +167,9 @@ public class InstallActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if(saveData()==1){
-					dialog = new ProgressDialog(InstallActivity.this);
-					dialog.setTitle("提示");
-					dialog.setMessage("正在上传...");
-					dialog.show();
-					saveDataFlag = 1;
-					uploadThread thread = new uploadThread();
-					new Thread(thread).start();
+
+					new Thread(new MyThread()).start();
+					progressDialog.show();
 				}
 			}
 		});
@@ -199,13 +178,9 @@ public class InstallActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				dialog = new ProgressDialog(InstallActivity.this);
-				dialog.setTitle("提示");
-				dialog.setMessage("正在扫卡...");
-				dialog.show();
-				
-				readCardThread myThread = new readCardThread();
-				new Thread(myThread).start();
+
+				Intent it = new Intent(InstallActivity.this,ScanCodeActivity.class);
+				startActivityForResult(it, 0);
 				
 			}
 
@@ -236,6 +211,26 @@ public class InstallActivity extends Activity {
 		});
 	}
 
+	private void uploadDialogShow() {
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setTitle("提示");
+		progressDialog.setMessage("正在上传...");
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		progressDialog.setCancelable(false);
+		alertDialog = new Builder(this);
+		alertDialog.setTitle("提示");
+		alertDialog.setPositiveButton("确认",
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						alertDialog.create().dismiss();
+						finish();
+					}
+				});
+	}
+	
 	protected int saveData() {
 		//仅更新device表
 		if(myAdapter.getContractSelected()==-1){
@@ -275,7 +270,7 @@ public class InstallActivity extends Activity {
 		return map;
 	}
 	
-	public HashMap<String, String> getInstall(int userId,int contractId,String type,String installMan,String installStatus,int deviceId,int uploadFlag) {
+	public HashMap<String, String> getInstall(int userId,int contractId,String type,String installMan,String installStatus,int deviceId,int uploadFlag,String image) {
 		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("userId", userId+"");
 		map.put("contractId", contractId+"");
@@ -284,6 +279,7 @@ public class InstallActivity extends Activity {
 		map.put("installStatus", installStatus);
 		map.put("deviceId", deviceId+"");
 		map.put("uplaodFlag", uploadFlag+"");
+		map.put("image", image);
 //		list.get(j).get("userId"),
 //		list.get(j).get("contractId"),
 //		list.get(j).get("type"),
@@ -303,12 +299,17 @@ public class InstallActivity extends Activity {
 		Collections.reverse(deviceList);
 		InstallServiceDao installServiceDao = new InstallServiceDao(InstallActivity.this);
 		ArrayList<HashMap<String, String>> historyMapList = new ArrayList<HashMap<String,String>>();
-		for(Device device:deviceList){
-			int id = device.getId();
+		
+		
+		for (int i = 0; i < deviceList.size(); i++) {
+			int id = deviceList.get(i).getId();
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String time = df.format(new Date());
 			HashMap<String, String> installMap = new HashMap<String, String>();
-			installMap = getInstall(userId,contractId, myAdapter.getInstallType(), myAdapter.getInstallMan(), myAdapter.getInstallStatus(),id,upLoadFlag);
+			installMap = getInstall(userId,contractId, myAdapter.getInstallType(), myAdapter.getInstallMan(), myAdapter.getInstallStatus(),id,upLoadFlag,image[i]);
+			
+			Log.i("image and something", installMap.toString());
+			
 			historyMapList.add(installMap);
 		}
 		
@@ -327,9 +328,16 @@ public class InstallActivity extends Activity {
 
 	@Override
 	protected void onResume() {
+		
 		super.onResume();
 	}
 
+	
+	@Override
+	public void onNewIntent(Intent intent){
+		
+	} 
+	
 	@Override
 	public void onBackPressed() {
 		Back();
@@ -373,35 +381,114 @@ public class InstallActivity extends Activity {
 
 	}
 	
-	public class uploadThread implements Runnable {
+
+	
+	class MyThread implements Runnable {
 
 		@Override
 		public void run() {
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+					
+			
+			
+			for (int j = 0; j < deviceList.size(); j++) {
+				//安装上传
+				Message msg = Message.obtain();
+				HashMap<String, String> map1 = new HashMap<String, String>();
+				
+				map1.put("contractId", "1");
+				//这里的类型是安装或加装
+				map1.put("type", "安装");
+				map1.put("installMan", "sadsa2222");
+				map1.put("installStatus", "未完成");
+				map1.put("deviceId", "1");
+				int id = 0;
+				try {
+					id = JSONUtils.UploadInstall(getResources()
+							.getString(R.string.INSTALL_ADD), map1);
+					if (id != 0) {
+						msg.what = 2;
+					} else {
+						msg.what = 0;
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				if (id != 0&&image[j]!=null) {
+					HashMap<String, String> params = new HashMap<String, String>();
+					params.put("id", id + "");
+					try {
+						String result = CasClient.getInstance().doSendImage(
+								getResources().getString(
+										R.string.INSTALL_UPLOAD),
+								image[j], params);
+						Log.i("asdasd",
+								"dasdasdasdasddddddddddddddddddddddddddddddddddddddddddd"
+										+ result);
+						int code = Integer.parseInt((new JSONObject(result)
+								.getString("code")));
+						Log.i("code", Integer.toString(code));
+						if (code == 200) {
+							msg.what = 3;
+						} else {
+							msg.what = 4;
+						}
+					} catch (Exception e) {
+						msg.what = 4;
+						e.printStackTrace();
+					}
+				}
+				handler.sendMessage(msg);
 			}
-			Message msg = Message.obtain();
-			msg.what = 2;
-			handler.sendMessage(msg);
+			
+			
 		}
-		
 	}
 	
-	public class readCardThread implements Runnable {
-
-		@Override
-		public void run() {
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		
+		String code = data.getStringExtra("Code");
+		if (code!=null) {
+			if(!code.substring(0, 4).equals("rent")){
+				Toast.makeText(InstallActivity.this, "请扫设备专用二维码！", Toast.LENGTH_SHORT).show();
+				return;
+			}else {
+				
+				
+				Device device = new Device();
+				device.setId(Integer.parseInt(code.split(",")[1]));
+				device.setNumber(code.split(",")[2]);
+				device.setName(code.split(",")[6]);
+				device.setDeviceType(code.split(",")[6]);
+				device.setMainDeviceId(Integer.parseInt(code.split(",")[7]));
+				device.setBatchNumber(code.split(",")[4]);
+				
+				deviceList = myAdapter.getDeviceList();
+				deviceList.add(device);
+				installType = myAdapter.getInstallType();
+				installMan = myAdapter.getInstallMan();
+				installStatus = myAdapter.getInstallStatus();
+				contractSelected = myAdapter.getContractSelected();
+				myAdapter = new InstallAdapter(InstallActivity.this,groupName,contractList,deviceList,installType,installMan,installStatus,contractSelected);
+				addItemListView.setAdapter(myAdapter);
+				addItemListView.expandGroup(2);
+				linearlayout_button.setVisibility(ViewGroup.VISIBLE);
+				
 			}
-			Message msg = Message.obtain();
-			msg.what = 1; 
-			handler.sendMessage(msg);
+		}else {
+			
+			
+			image[data.getExtras().getInt("i")]=data.getExtras().getString("image");
+			
+			if (data.getExtras().getString("image")!=null) {
+				Log.i("iInstall",data.getExtras().getInt("i")+"" );
+				Log.i("imageInstall",data.getExtras().getString("image") );
+			}
 		}
+		
+		
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 	
 }

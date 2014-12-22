@@ -5,25 +5,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.csei.adapter.StockListAdapter;
 import com.csei.application.MyApplication;
+import com.csei.client.CasClient;
 import com.csei.database.entity.Contract;
 import com.csei.database.entity.Device;
 import com.csei.database.entity.Store;
-import com.csei.database.entity.service.imple.DeviceServiceDao;
-import com.csei.database.entity.service.imple.StockInServiceDao;
 import com.csei.database.entity.service.imple.StockOutServiceDao;
+import com.csei.util.JSONUtils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -57,6 +62,10 @@ public class StockOutActivity extends Activity {
 	private String carNumber = "eeeee";
 	private int contractId;
 	private int storehouseId;
+	private String[] image=new String[100];
+	private ProgressDialog progressDialog;
+	private Builder alertDialog;
+	private String activityName="StockOutActivity";
 	
 	public void initData(){
 		storeList = new ArrayList<Store>();
@@ -115,20 +124,21 @@ public class StockOutActivity extends Activity {
 		
 		super.onCreate(savedInstanceState);
 		MyApplication.getInstance().addActivity(this);
-		setContentView(R.layout.activity_stock_in);
+		setContentView(R.layout.activity_stock_out);
 		userId = Integer.parseInt(getIntent().getStringExtra("userId"));
 		
-		left_back = (ImageView) findViewById(R.id.iv_topbar_left_back_stockin);
-		addItemListView = (ExpandableListView) findViewById(R.id.add_item_listview_stockin);
-		addItemButton = (Button) findViewById(R.id.scan_Button_stockin);
-		uploadButton = (Button) findViewById(R.id.uploadbutton_stockin);
-		saveButton = (Button) findViewById(R.id.savebutton_stockin);
-		cancelButton = (Button) findViewById(R.id.cancelbutton_stockin);
+		left_back = (ImageView) findViewById(R.id.iv_topbar_left_back_stockout);
+		addItemListView = (ExpandableListView) findViewById(R.id.add_item_listview_stockout);
+		addItemButton = (Button) findViewById(R.id.scan_Button_stockout);
+		uploadButton = (Button) findViewById(R.id.uploadbutton_stockout);
+		saveButton = (Button) findViewById(R.id.savebutton_stockout);
+		cancelButton = (Button) findViewById(R.id.cancelbutton_stockout);
 		linearlayout_button = (LinearLayout) findViewById(R.id.linearlayout_button);
+		uploadDialogShow();
 		
 		initData();
 		//Context context,String[] groupName,ArrayList<Contract> contractList,ArrayList<Store> storeList,ArrayList<Device> deviceList,int contractSelected,int storeSelected,String driverName,String driverPhone,String carNumber
-		myAdapter = new StockListAdapter(StockOutActivity.this,groupName,contractList,storeList,deviceList,contractSelected,storeSelected,driverName,driverPhone,carNumber);
+		myAdapter = new StockListAdapter(StockOutActivity.this,groupName,contractList,storeList,deviceList,contractSelected,storeSelected,driverName,driverPhone,carNumber,activityName);
 		linearlayout_button.setVisibility(ViewGroup.GONE);
 		
 		addItemListView.setAdapter(myAdapter);
@@ -138,30 +148,24 @@ public class StockOutActivity extends Activity {
 			public void handleMessage(Message msg) {
 				super.handleMessage(msg);
 				switch (msg.what) {
-				case 1:
-					dialog.dismiss();
-					Device device = new Device();
-					device.setId((int)(1+Math.random()*(1000-1+1)));
-					device.setName("塔吊");
-					deviceList = myAdapter.getDeviceList();
-					deviceList.add(device);
-					contractSelected = myAdapter.getContractSelected();
-					storeSelected = myAdapter.getStoreSelected();
-					driverName = myAdapter.getDriverName();
-					driverPhone = myAdapter.getDriverPhone();
-					carNumber = myAdapter.getCarNumber();
-					myAdapter = new StockListAdapter(StockOutActivity.this,groupName,contractList,storeList,deviceList,contractSelected,storeSelected,driverName,driverPhone,carNumber);
-					addItemListView.setAdapter(myAdapter);
-					addItemListView.expandGroup(3);
-					linearlayout_button.setVisibility(ViewGroup.VISIBLE);
-					break;
+				
 				case 2:
 					dialog.dismiss();
-					Toast.makeText(getApplicationContext(), "上传成功", Toast.LENGTH_LONG).show();
 					upLoadFlag = 1;
-					if(saveDataFlag==1)
-						saveHistory();
+					saveHistory();
+					Toast.makeText(getApplicationContext(), "上传成功",
+							Toast.LENGTH_LONG).show();
 					break;
+				case 3:
+					progressDialog.dismiss();
+					alertDialog.setTitle("提示").setMessage("图片上传成功").show();
+					break;
+				case 4:
+					progressDialog.dismiss();
+					alertDialog.setTitle("提示").setMessage("图片上传失败，请稍后重试")
+							.show();
+					break;
+
 				default:
 					break;
 				}
@@ -181,13 +185,8 @@ public class StockOutActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if(saveData()==1){
-					dialog = new ProgressDialog(StockOutActivity.this);
-					dialog.setTitle("提示");
-					dialog.setMessage("正在上传...");
-					dialog.show();
-					saveDataFlag = 1;
-					uploadThread thread = new uploadThread();
-					new Thread(thread).start();
+					new Thread(new MyThread()).start();
+					progressDialog.show();
 				}
 			}
 		});
@@ -196,14 +195,15 @@ public class StockOutActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				dialog = new ProgressDialog(StockOutActivity.this);
-				dialog.setTitle("提示");
-				dialog.setMessage("正在扫卡...");
-				dialog.show();
-				
-				readCardThread myThread = new readCardThread();
-				new Thread(myThread).start();
-				
+//				dialog = new ProgressDialog(StockOutActivity.this);
+//				dialog.setTitle("提示");
+//				dialog.setMessage("正在扫卡...");
+//				dialog.show();
+//				
+//				readCardThread myThread = new readCardThread();
+//				new Thread(myThread).start();
+				Intent it = new Intent(StockOutActivity.this,ScanCodeActivity.class);
+				startActivityForResult(it, 0);
 			}
 
 		});
@@ -219,7 +219,7 @@ public class StockOutActivity extends Activity {
 				carNumber = "";
 				contractSelected = -1;
 				storeSelected = -1;
-				myAdapter = new StockListAdapter(StockOutActivity.this, groupName,contractList,storeList,deviceList,contractSelected,storeSelected,driverName,driverPhone,carNumber);
+				myAdapter = new StockListAdapter(StockOutActivity.this, groupName,contractList,storeList,deviceList,contractSelected,storeSelected,driverName,driverPhone,carNumber,activityName);
 				addItemListView.setAdapter(myAdapter);
 				addItemListView.expandGroup(3);
 				linearlayout_button.setVisibility(ViewGroup.GONE);
@@ -237,6 +237,26 @@ public class StockOutActivity extends Activity {
 		});
 	}
 
+	private void uploadDialogShow() {
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setTitle("提示");
+		progressDialog.setMessage("正在上传...");
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		progressDialog.setCancelable(false);
+		alertDialog = new Builder(this);
+		alertDialog.setTitle("提示");
+		alertDialog.setPositiveButton("确认",
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						alertDialog.create().dismiss();
+						finish();
+					}
+				});
+	}
+	
 	protected int saveData() {
 		//仅更新device表
 		if(myAdapter.getContractSelected()==-1){
@@ -283,7 +303,7 @@ public class StockOutActivity extends Activity {
 		return map;
 	}
 
-	public HashMap<String, String> getStockOut(int userId,int storehouseId,int contractId,String driver,String number,String carNumber,String description,int deviceId,int uploadFlag) {
+	public HashMap<String, String> getStockOut(int userId,int storehouseId,int contractId,String driver,String number,String carNumber,String description,int deviceId,int uploadFlag,String image) {
 		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("userId", userId+"");
 		map.put("storehouseId", storehouseId+"");
@@ -294,6 +314,7 @@ public class StockOutActivity extends Activity {
 		map.put("description", description);
 		map.put("deviceId", deviceId+"");
 		map.put("uplaodFlag", uploadFlag+"");
+		map.put("image", image);
 //		list.get(j).get("userId"),
 //		list.get(j).get("storehouseId"),
 //		list.get(j).get("number"),
@@ -320,15 +341,16 @@ public class StockOutActivity extends Activity {
 		carNumber = myAdapter.getCarNumber();
 		
 		ArrayList<HashMap<String, String>> historyMapList = new ArrayList<HashMap<String,String>>();
-		for(Device device:deviceList){
-			int deviceId = device.getId();
+		for (int i = 0; i < deviceList.size(); i++) {
+			int deviceId = deviceList.get(i).getId();
 			storehouseId = storeList.get(storeSelected).getId();
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String description = df.format(new Date());
 			HashMap<String, String> historyMap = new HashMap<String, String>();
-			historyMap = getStockOut(userId, storehouseId, contractId, driver, number, carNumber, description, deviceId, upLoadFlag);
+			historyMap = getStockOut(userId, storehouseId, contractId, driver, number, carNumber, description, deviceId, upLoadFlag,image[i]);
 			historyMapList.add(historyMap);
 		}
+		
 		
 		stockOutServiceDao.add(historyMapList);
 		upLoadFlag = 0;
@@ -338,7 +360,7 @@ public class StockOutActivity extends Activity {
 		deviceList.clear();
 		contractSelected = -1;
 		storeSelected = -1;
-		myAdapter = new StockListAdapter(StockOutActivity.this, groupName,contractList,storeList,deviceList,contractSelected,storeSelected,"","","");
+		myAdapter = new StockListAdapter(StockOutActivity.this, groupName,contractList,storeList,deviceList,contractSelected,storeSelected,"","","",activityName);
 		addItemListView.setAdapter(myAdapter);
 		addItemListView.expandGroup(3);
 		linearlayout_button.setVisibility(ViewGroup.GONE);
@@ -370,7 +392,7 @@ public class StockOutActivity extends Activity {
 													deviceList.clear();
 													contractSelected = -1;
 													storeSelected = -1;
-													myAdapter = new StockListAdapter(StockOutActivity.this, groupName,contractList,storeList,deviceList,contractSelected,storeSelected,"","","");
+													myAdapter = new StockListAdapter(StockOutActivity.this, groupName,contractList,storeList,deviceList,contractSelected,storeSelected,"","","",activityName);
 													addItemListView.setAdapter(myAdapter);
 													addItemListView.expandGroup(1);
 													linearlayout_button.setVisibility(ViewGroup.GONE);
@@ -392,35 +414,112 @@ public class StockOutActivity extends Activity {
 
 	}
 	
-	public class uploadThread implements Runnable {
+	class MyThread implements Runnable {
 
 		@Override
 		public void run() {
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			
+			
+			
+			for (int j = 0; j < deviceList.size(); j++) {
+				//入出库上传
+				Message msg = Message.obtain();
+				HashMap<String, String> map1 = new HashMap<String, String>();
+				map1.put("storeId", 1 + "");
+				//入库单编号，这里暂时手动定
+				map1.put("number", "1212aa");
+				//合同号：跟仓库、工地类似的下拉栏
+				map1.put("contractId", "1");
+				map1.put("driverName", "yangyang");
+				map1.put("carNum", "sadsa2222");
+				map1.put("description", "ssss");
+				map1.put("deviceId", "1");
+				int id = 0;
+				try {
+					id = JSONUtils.UploadStock(getResources()
+							.getString(R.string.STOCK_OUT_ADD), map1);
+					if (id != 0) {
+						msg.what = 2;
+					} else {
+						msg.what = 0;
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				if (id != 0&&image[j]!=null) {
+					HashMap<String, String> params = new HashMap<String, String>();
+					params.put("id", id + "");
+					try {
+						String result = CasClient.getInstance().doSendImage(
+								getResources().getString(
+										R.string.STOCK_OUT_UPLOAD),
+								image[j], params);
+						Log.i("asdasd",
+								"dasdasdasdasddddddddddddddddddddddddddddddddddddddddddd"
+										+ result);
+						int code = Integer.parseInt((new JSONObject(result)
+								.getString("code")));
+						Log.i("code", Integer.toString(code));
+						if (code == 200) {
+							msg.what = 3;
+						} else {
+							msg.what = 4;
+						}
+					} catch (Exception e) {
+						msg.what = 4;
+						e.printStackTrace();
+					}
+				}
+				handler.sendMessage(msg);
 			}
-			Message msg = Message.obtain();
-			msg.what = 2;
-			handler.sendMessage(msg);
+			
+			
+		}
+	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		
+		String code = data.getStringExtra("Code");
+		if (code!=null) {
+			if(!code.substring(0, 4).equals("rent")){
+				Toast.makeText(StockOutActivity.this, "请扫设备专用二维码！", Toast.LENGTH_SHORT).show();
+				return;
+			}else {
+				
+				
+				Device device = new Device();
+				device.setId(Integer.parseInt(code.split(",")[1]));
+				device.setNumber(code.split(",")[2]);
+				device.setName(code.split(",")[6]);
+				device.setDeviceType(code.split(",")[6]);
+				device.setMainDeviceId(Integer.parseInt(code.split(",")[7]));
+				device.setBatchNumber(code.split(",")[4]);
+				
+				deviceList = myAdapter.getDeviceList();
+				deviceList.add(device);
+				contractSelected = myAdapter.getContractSelected();
+				storeSelected = myAdapter.getStoreSelected();
+				driverName = myAdapter.getDriverName();
+				driverPhone = myAdapter.getDriverPhone();
+				carNumber = myAdapter.getCarNumber();
+				myAdapter = new StockListAdapter(StockOutActivity.this,groupName,contractList,storeList,deviceList,contractSelected,storeSelected,driverName,driverPhone,carNumber,activityName);
+				addItemListView.setAdapter(myAdapter);
+				addItemListView.expandGroup(3);
+				linearlayout_button.setVisibility(ViewGroup.VISIBLE);
+				
+			}
+		}else {
+			image[data.getExtras().getInt("i")] = data.getExtras().getString(
+					"image");
+
+			if (data.getExtras().getString("image") != null) {
+				Log.i("iStockOut", data.getExtras().getInt("i") + "");
+				Log.i("imageStockOut", data.getExtras().getString("image"));
+			}
 		}
 		
+		
+		super.onActivityResult(requestCode, resultCode, data);
 	}
-	
-	public class readCardThread implements Runnable {
-
-		@Override
-		public void run() {
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			Message msg = Message.obtain();
-			msg.what = 1; 
-			handler.sendMessage(msg);
-		}
-	}
-	
 }
