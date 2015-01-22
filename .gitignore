@@ -1,9 +1,2 @@
-.idea
-out
-*.iml
-target
-.classpath
-.project
-auth
-*.jar
 bin
+gen

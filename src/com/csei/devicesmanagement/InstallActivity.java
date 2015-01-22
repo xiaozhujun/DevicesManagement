@@ -46,7 +46,6 @@ public class InstallActivity extends Activity {
 	private Button saveButton;
 	private Button cancelButton;
 	private ImageView left_back;
-	private ProgressDialog dialog;
 	private Handler handler;
 	private int upLoadFlag = 0;
 	private ArrayList<Contract> contractList;
@@ -132,7 +131,7 @@ public class InstallActivity extends Activity {
 				switch (msg.what) {
 				
 				case 2:
-					dialog.dismiss();
+					progressDialog.dismiss();
 					upLoadFlag = 1;
 					saveHistory();
 					Toast.makeText(getApplicationContext(), "上传成功",
